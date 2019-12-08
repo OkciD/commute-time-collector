@@ -13,9 +13,18 @@ import chromediver from 'chromedriver';
 	});
 
 	await browser.url('https://yandex.ru/maps');
-	await browser.debug();
+
+	const mapsConfig: unknown = await browser.execute(() => {
+		const scriptElement = document.querySelector('script.config-view');
+
+		if (!scriptElement) {
+			return 'kek';
+		}
+
+		return scriptElement.innerHTML;
+	});
+	console.log(mapsConfig);
 
 	await browser.deleteSession();
-
 	chromediver.stop();
 })();
