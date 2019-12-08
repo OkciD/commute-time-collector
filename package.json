@@ -2,10 +2,19 @@
   "name": "commute-time-collector",
   "version": "0.0.1",
   "description": "A script that collects time necessary to get from point A to point B via Yandex maps",
-  "main": "index.js",
   "scripts": {
+    "start": "ts-node ./index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Yury Baykov",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/request-promise-native": "1.0.17",
+    "@types/webdriverio": "5.0.0",
+    "request": "2.88.0",
+    "request-promise-native": "1.0.8",
+    "ts-node": "8.5.4",
+    "typescript": "3.7.3",
+    "webdriverio": "5.16.13"
+  }
 }
