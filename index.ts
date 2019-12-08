@@ -16,7 +16,10 @@ interface ConfigView {
 	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
 		port: 9515,
 		capabilities: {
-			browserName: 'chrome'
+			browserName: 'chrome',
+			'goog:chromeOptions': {
+				args: ['--headless', '--disable-gpu'],
+			},
 		},
 		maxInstances: 1,
 		logLevel: 'error',
