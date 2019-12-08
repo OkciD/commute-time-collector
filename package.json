@@ -1,0 +1,11 @@
+{
+  "name": "commute-time-collector",
+  "version": "0.0.1",
+  "description": "A script that collects time necessary to get from point A to point B via Yandex maps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yury Baykov",
+  "license": "ISC"
+}
