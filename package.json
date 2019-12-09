@@ -1,7 +1,7 @@
 {
   "name": "commute-time-collector",
   "version": "0.0.1",
-  "description": "A script that collects time necessary to get from point A to point B via Yandex maps",
+  "description": "A service that collects time to get from point A to point B via Yandex maps",
   "scripts": {
     "start": "ts-node ./index.ts",
     "tsc": "tsc"
