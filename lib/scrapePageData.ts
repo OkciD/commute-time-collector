@@ -8,7 +8,7 @@ export interface PageData {
 	cookies: Webdriver.Cookie[];
 }
 
-interface ConfigView {
+interface PageConfig {
 	csrfToken: string;
 	counters: {
 		analytics: {
@@ -17,7 +17,11 @@ interface ConfigView {
 	};
 }
 
-export default async function getPageData(): Promise<PageData> {
+/**
+ * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
+ * @return {Promise<PageData>}
+ */
+export default async function scrapePageData(): Promise<PageData> {
 	chromedriver.start(['--port=9515', '--url-base=wd/hub']);
 
 	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
@@ -33,14 +37,14 @@ export default async function getPageData(): Promise<PageData> {
 
 	await browser.url('https://yandex.ru/maps');
 
-	const configViewJson: string | null = await browser.execute<string | null>(() => {
+	const pageConfigJson: string | null = await browser.execute<string | null>(() => {
 		const scriptElement = document.querySelector('script.config-view');
 
 		return scriptElement ? scriptElement.innerHTML : null;
 	});
 
-	if (!configViewJson) {
-		throw new Error('Unable to find config-view script on the page');
+	if (!pageConfigJson) {
+		throw new Error('Unable to find config on the page');
 	}
 
 	const cookies: WebDriver.Cookie[] = await browser.getCookies();
@@ -48,11 +52,11 @@ export default async function getPageData(): Promise<PageData> {
 	await browser.deleteSession();
 	chromedriver.stop();
 
-	let mapsConfig: ConfigView = JSON.parse(configViewJson);
+	let pageConfig: PageConfig = JSON.parse(pageConfigJson);
 
 	return {
-		csrfToken: mapsConfig.csrfToken,
-		sessionId: mapsConfig.counters.analytics.sessionId,
+		csrfToken: pageConfig.csrfToken,
+		sessionId: pageConfig.counters.analytics.sessionId,
 		cookies
 	}
 }

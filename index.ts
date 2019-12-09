@@ -1,5 +1,5 @@
-import getPageData from './lib/getPageData';
+import scrapePageData from './lib/scrapePageData';
 
 (async () => {
-	console.log(await getPageData());
+	console.log(await scrapePageData());
 })();
