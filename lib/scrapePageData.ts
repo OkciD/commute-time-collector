@@ -18,6 +18,8 @@ interface PageConfig {
 	};
 }
 
+const CHROMEDRIVER_PORT: number = 9515;
+
 /**
  * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
  * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
@@ -25,11 +27,11 @@ interface PageConfig {
  */
 export default async function scrapePageData(): Promise<PageData> {
 	// запускаем chromedriver
-	chromedriver.start(['--port=9515', '--url-base=wd/hub']);
+	chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub']);
 
 	// запускаем и настраиваем wdio
 	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
-		port: 9515,
+		port: CHROMEDRIVER_PORT,
 		capabilities: {
 			browserName: 'chrome',
 			'goog:chromeOptions': {
