@@ -20,6 +20,7 @@ interface PageConfig {
 
 /**
  * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
+ * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
  * @return {Promise<PageData>}
  */
 export default async function scrapePageData(): Promise<PageData> {
