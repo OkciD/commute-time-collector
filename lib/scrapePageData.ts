@@ -8,6 +8,7 @@ export interface PageData {
 	cookies: Webdriver.Cookie[];
 }
 
+// укороченный тайпинг для зашитого в html'е json'а с полезными данными
 interface PageConfig {
 	csrfToken: string;
 	counters: {
@@ -22,21 +23,24 @@ interface PageConfig {
  * @return {Promise<PageData>}
  */
 export default async function scrapePageData(): Promise<PageData> {
+	// запускаем chromedriver
 	chromedriver.start(['--port=9515', '--url-base=wd/hub']);
 
+	// запускаем и настраиваем wdio
 	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
 		port: 9515,
 		capabilities: {
 			browserName: 'chrome',
 			'goog:chromeOptions': {
-				args: ['--headless', '--disable-gpu'],
+				args: ['--headless', '--disable-gpu'], // используем headless chrome
 			},
 		},
-		maxInstances: 1,
 	});
 
+	// заходим на страницу Яндекс карт
 	await browser.url('https://yandex.ru/maps');
 
+	// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
 	const pageConfigJson: string | null = await browser.execute<string | null>(() => {
 		const scriptElement = document.querySelector('script.config-view');
 
@@ -47,8 +51,10 @@ export default async function scrapePageData(): Promise<PageData> {
 		throw new Error('Unable to find config on the page');
 	}
 
+	// достаём все куки
 	const cookies: WebDriver.Cookie[] = await browser.getCookies();
 
+	// закрываем браузер, стопаем chromedriver
 	await browser.deleteSession();
 	chromedriver.stop();
 
