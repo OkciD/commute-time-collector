@@ -22,7 +22,6 @@ interface ConfigView {
 			},
 		},
 		maxInstances: 1,
-		logLevel: 'error',
 	});
 
 	await browser.url('https://yandex.ru/maps');
@@ -37,6 +36,8 @@ interface ConfigView {
 		throw new Error('Unable to find config-view script on page');
 	}
 
+	const cookies: WebDriver.Cookie[] = await browser.getCookies();
+
 	await browser.deleteSession();
 	chromediver.stop();
 
@@ -44,4 +45,5 @@ interface ConfigView {
 
 	console.log(mapsConfig.csrfToken);
 	console.log(mapsConfig.counters.analytics.sessionId);
+	console.log(cookies);
 })();
