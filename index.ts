@@ -33,7 +33,7 @@ interface ConfigView {
 	});
 
 	if (!configViewJson) {
-		throw new Error('Unable to find config-view script on page');
+		throw new Error('Unable to find config-view script on the page');
 	}
 
 	const cookies: WebDriver.Cookie[] = await browser.getCookies();
