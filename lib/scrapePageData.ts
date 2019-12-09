@@ -42,7 +42,7 @@ export default async function scrapePageData(): Promise<PageData> {
 
 	// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
 	const pageConfigJson: string | null = await browser.execute<string | null>(() => {
-		const scriptElement = document.querySelector('script.config-view');
+		const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
 
 		return scriptElement ? scriptElement.innerHTML : null;
 	});
