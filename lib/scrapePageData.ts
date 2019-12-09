@@ -66,6 +66,6 @@ export default async function scrapePageData(): Promise<PageData> {
 	return {
 		csrfToken: pageConfig.csrfToken,
 		sessionId: pageConfig.counters.analytics.sessionId,
-		cookies
-	}
+		cookies,
+	};
 }
