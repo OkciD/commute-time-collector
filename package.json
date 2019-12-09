@@ -4,7 +4,7 @@
   "description": "A script that collects time necessary to get from point A to point B via Yandex maps",
   "scripts": {
     "start": "ts-node ./index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc"
   },
   "author": "Yury Baykov",
   "license": "ISC",

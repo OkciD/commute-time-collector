@@ -1,0 +1,14 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js: 12
+cache: npm
+branches:
+  only:
+    - master
+jobs:
+  include:
+#    - stage: lint
+#      script: npm run lint
+    - stage: tsc
+      script: npm run tsc
