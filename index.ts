@@ -1,5 +1,7 @@
 import scrapePageData from './lib/scrapePageData';
 
-(async () => {
+(async (): Promise<void> => {
 	console.log(await scrapePageData());
-})();
+})().catch((error) => {
+	console.error(error);
+});

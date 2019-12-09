@@ -18,7 +18,7 @@ interface PageConfig {
 	};
 }
 
-const CHROMEDRIVER_PORT: number = 9515;
+const CHROMEDRIVER_PORT = 9515;
 
 /**
  * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
@@ -61,7 +61,7 @@ export default async function scrapePageData(): Promise<PageData> {
 	await browser.deleteSession();
 	chromedriver.stop();
 
-	let pageConfig: PageConfig = JSON.parse(pageConfigJson);
+	const pageConfig: PageConfig = JSON.parse(pageConfigJson);
 
 	return {
 		csrfToken: pageConfig.csrfToken,
