@@ -27,7 +27,9 @@ const CHROMEDRIVER_PORT = 9515;
  */
 export default async function scrapePageData(): Promise<PageData> {
 	// запускаем chromedriver
-	await chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub']);
+	// todo: no ts-ignore
+	// @ts-ignore
+	await chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub'], true);
 
 	// запускаем и настраиваем wdio
 	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
@@ -59,7 +61,7 @@ export default async function scrapePageData(): Promise<PageData> {
 
 	// закрываем браузер, стопаем chromedriver
 	await browser.deleteSession();
-	await chromedriver.stop();
+	chromedriver.stop();
 
 	const pageConfig: PageConfig = JSON.parse(pageConfigJson);
 
