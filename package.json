@@ -15,6 +15,7 @@
     "chromedriver": "78.0.1",
     "request": "2.88.0",
     "request-promise-native": "1.0.8",
+    "tough-cookie": "*",
     "ts-node": "8.5.4",
     "typescript": "3.7.3",
     "webdriver": "*",
