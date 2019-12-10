@@ -30,5 +30,5 @@ import requestPromise from 'request-promise-native';
 
 	console.log(response);
 })().catch((error) => {
-	console.error(error);
+	throw error;
 });
