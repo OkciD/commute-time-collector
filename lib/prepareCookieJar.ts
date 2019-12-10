@@ -12,6 +12,7 @@ export default function prepareCookieJar(cookies: WebDriver.Cookie[]): request.C
 			httpOnly: cookie.httpOnly,
 			path: cookie.path,
 			secure: cookie.secure,
+			// todo: no ts-ignore
 			// @ts-ignore
 			domain: cookie.domain,
 		}).toString(), 'https://yandex.ru/maps');
