@@ -1,8 +1,10 @@
 import scrapePageData, { PageData } from './lib/scrapePageData';
 import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
+import logger from './utils/logger';
 
 (async (): Promise<void> => {
+	logger.info('Start');
 	const { csrfToken, sessionId, cookies }: PageData = await scrapePageData();
 
 	// todo: типизировать
@@ -28,7 +30,11 @@ import requestPromise from 'request-promise-native';
 		json: true,
 	});
 
-	console.log(response);
+	logger.info('Response OK', response);
+
+	logger.info('Successful stop');
 })().catch((error) => {
-	throw error;
+	logger.error(error);
+
+	process.exit(1);
 });

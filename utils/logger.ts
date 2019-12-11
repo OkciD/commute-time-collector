@@ -1,12 +1,14 @@
 import winston from 'winston';
 import fecha from 'fecha';
 
-const logger: winston.Logger = winston.createLogger({
+export type Logger = winston.Logger;
+
+const logger: Logger = winston.createLogger({
 	level: 'info',
+	defaultMeta: {
+		id: Math.random().toString(36).substr(2, 7), // рандомный хеш
+	},
 	format: winston.format.combine(
-		winston.format.label({
-			label: Math.random().toString(36).substr(2, 7), // рандомный хеш
-		}),
 		winston.format.ms(),
 		winston.format.timestamp({
 			format: 'HH:mm:ss',
