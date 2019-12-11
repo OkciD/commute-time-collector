@@ -30,7 +30,7 @@ import logger from './utils/logger';
 		json: true,
 	});
 
-	logger.info('Response OK', response);
+	// logger.info('Response OK', response);
 
 	logger.info('Successful stop');
 })().catch((error) => {

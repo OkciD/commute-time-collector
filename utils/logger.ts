@@ -3,10 +3,9 @@ import fecha from 'fecha';
 
 export type Logger = winston.Logger;
 
-const logger: Logger = winston.createLogger({
-	level: 'info',
+const prodLogger: Logger = winston.createLogger({
 	defaultMeta: {
-		id: Math.random().toString(36).substr(2, 7), // рандомный хеш
+		sid: Math.random().toString(36).substr(2, 7), // рандомный хеш
 	},
 	format: winston.format.combine(
 		winston.format.ms(),
@@ -17,13 +16,28 @@ const logger: Logger = winston.createLogger({
 		winston.format.json(),
 	),
 	transports: [
-		process.env.NODE_ENV === 'dev' ?
-			new winston.transports.Console() :
-			new winston.transports.File({
-				dirname: 'logs',
-				filename: `${fecha.format(new Date(), 'DD-MM-YYYY')}.log`,
-			}),
+		new winston.transports.File({
+			dirname: 'logs',
+			filename: `${fecha.format(new Date(), 'DD-MM-YYYY')}.log`,
+		}),
 	],
 });
 
-export default logger;
+const devLogger: Logger = winston.createLogger({
+	format: winston.format.combine(
+		winston.format.ms(),
+		winston.format.timestamp({
+			format: 'HH:mm:ss',
+		}),
+		winston.format.colorize({
+			all: true,
+		}),
+		winston.format.errors({ stack: true }),
+		winston.format.simple(),
+	),
+	transports: [
+		new winston.transports.Console(),
+	],
+});
+
+export default process.env.NODE_ENV === 'dev' ? devLogger : prodLogger;
