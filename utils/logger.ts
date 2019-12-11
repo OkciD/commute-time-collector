@@ -17,10 +17,12 @@ const logger: Logger = winston.createLogger({
 		winston.format.json(),
 	),
 	transports: [
-		new winston.transports.File({
-			dirname: 'logs',
-			filename: `${fecha.format(new Date(), 'DD-MM-YYYY')}.log`,
-		}),
+		process.env.NODE_ENV === 'dev' ?
+			new winston.transports.Console() :
+			new winston.transports.File({
+				dirname: 'logs',
+				filename: `${fecha.format(new Date(), 'DD-MM-YYYY')}.log`,
+			}),
 	],
 });
 
