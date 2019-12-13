@@ -1,5 +1,15 @@
 import winston from 'winston';
 import fecha from 'fecha';
+import fs from 'fs';
+
+// заправляем stdout и stderr в отдельный файл (в него активно пишут chromedriver и webdriverio)
+if (process.env.NODE_ENV !== 'dev') {
+	const stdOutErrSteam: fs.WriteStream = fs.createWriteStream('./logs/stdouterr.log');
+	// @ts-ignore
+	process.stdout.write = stdOutErrSteam.write.bind(stdOutErrSteam);
+	// @ts-ignore
+	process.stderr.write = stdOutErrSteam.write.bind(stdOutErrSteam);
+}
 
 export type Logger = winston.Logger;
 

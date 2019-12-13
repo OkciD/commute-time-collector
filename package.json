@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/chromedriver": "2.38.0",
+    "@types/node": "12.12.17",
     "@types/request-promise-native": "1.0.17",
     "@types/winston": "2.4.4",
     "chromedriver": "78.0.1",
