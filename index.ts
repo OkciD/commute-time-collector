@@ -36,7 +36,13 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 		json: true,
 	});
 
-	logger.info('Response OK', response);
+	logger.info('Response OK',
+		response.data.routes.map(({ distance, duration, durationInTraffic, flags }: any) => ({
+			distance,
+			duration,
+			durationInTraffic,
+			flags,
+		})));
 
 	logger.info('Successful stop');
 })();
