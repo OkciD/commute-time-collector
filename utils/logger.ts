@@ -1,10 +1,19 @@
 import winston from 'winston';
 import fecha from 'fecha';
 import fs from 'fs';
+import path from 'path';
+import args from './args';
+import packageJson from '../package.json';
+
+const LOGS_DIR: string = args.logsDir || packageJson.logsDir;
+
+if (!fs.existsSync(LOGS_DIR)) {
+	fs.mkdirSync(LOGS_DIR);
+}
 
 // заправляем stdout и stderr в отдельный файл (в него активно пишут chromedriver и webdriverio)
 if (process.env.NODE_ENV !== 'dev') {
-	const stdOutErrSteam: fs.WriteStream = fs.createWriteStream('./logs/stdouterr.log');
+	const stdOutErrSteam: fs.WriteStream = fs.createWriteStream(path.join(LOGS_DIR, 'stdouterr.log'));
 	// @ts-ignore
 	process.stdout.write = stdOutErrSteam.write.bind(stdOutErrSteam);
 	// @ts-ignore
@@ -27,7 +36,7 @@ const prodLogger: Logger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.File({
-			dirname: 'logs',
+			dirname: LOGS_DIR,
 			filename: `${fecha.format(new Date(), 'DD-MM-YYYY')}.log`,
 		}),
 	],
