@@ -1,7 +1,7 @@
 import * as Webdriver from 'webdriver';
 import * as WebdriverIO from 'webdriverio';
 import * as chromedriver from 'chromedriver';
-import { logsDir } from '../utils/logger';
+import { getChromedriverLogArg, getWdioLogConfig } from '../utils/logger';
 
 export interface PageData {
 	csrfToken: string;
@@ -20,6 +20,8 @@ interface PageConfig {
 }
 
 const CHROMEDRIVER_PORT = 9515;
+
+// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
 let browser: WebdriverIO.BrowserObject;
 
 /**
@@ -34,7 +36,7 @@ export default async function scrapePageData(): Promise<PageData> {
 		await chromedriver.start([
 			`--port=${CHROMEDRIVER_PORT}`,
 			'--url-base=wd/hub',
-			process.env.NODE_ENV !== 'dev' && '--silent',
+			getChromedriverLogArg(),
 			// @ts-ignore
 		], true);
 
@@ -47,7 +49,7 @@ export default async function scrapePageData(): Promise<PageData> {
 					args: ['--headless', '--disable-gpu'], // используем headless chrome
 				},
 			},
-			...process.env.NODE_ENV !== 'dev' && { outputDir: logsDir },
+			...getWdioLogConfig(),
 		});
 
 		// заходим на страницу Яндекс карт
