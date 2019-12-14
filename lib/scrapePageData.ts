@@ -26,48 +26,54 @@ const CHROMEDRIVER_PORT = 9515;
  * @return {Promise<PageData>}
  */
 export default async function scrapePageData(): Promise<PageData> {
-	// запускаем chromedriver
-	// todo: no ts-ignore
-	// @ts-ignore
-	await chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub'], true);
+	try {
+		// запускаем chromedriver
+		// todo: no ts-ignore
+		// @ts-ignore
+		await chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub'], true);
 
-	// запускаем и настраиваем wdio
-	const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
-		port: CHROMEDRIVER_PORT,
-		capabilities: {
-			browserName: 'chrome',
-			'goog:chromeOptions': {
-				args: ['--headless', '--disable-gpu'], // используем headless chrome
+		// запускаем и настраиваем wdio
+		const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
+			port: CHROMEDRIVER_PORT,
+			capabilities: {
+				browserName: 'chrome',
+				'goog:chromeOptions': {
+					args: ['--headless', '--disable-gpu'], // используем headless chrome
+				},
 			},
-		},
-	});
+		});
 
-	// заходим на страницу Яндекс карт
-	await browser.url('https://yandex.ru/maps');
+		// заходим на страницу Яндекс карт
+		await browser.url('https://yandex.ru/maps');
 
-	// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
-	const pageConfigJson: string | null = await browser.execute<string | null>(() => {
-		const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
+		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
+		const pageConfigJson: string | undefined = await browser.execute<string | undefined>(() => {
+			const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
 
-		return scriptElement ? scriptElement.innerHTML : null;
-	});
+			return scriptElement?.innerHTML;
+		});
 
-	if (!pageConfigJson) {
-		throw new Error('Unable to find config on the page');
+		if (!pageConfigJson) {
+			throw new Error('Unable to find config on the page');
+		}
+
+		// достаём все куки
+		const cookies: WebDriver.Cookie[] = await browser.getCookies();
+
+		// закрываем браузер, стопаем chromedriver
+		await browser.deleteSession();
+		chromedriver.stop();
+
+		const pageConfig: PageConfig = JSON.parse(pageConfigJson);
+
+		return {
+			csrfToken: pageConfig.csrfToken,
+			sessionId: pageConfig.counters.analytics.sessionId,
+			cookies,
+		};
+	} catch (error) {
+		chromedriver.stop();
+
+		throw error;
 	}
-
-	// достаём все куки
-	const cookies: WebDriver.Cookie[] = await browser.getCookies();
-
-	// закрываем браузер, стопаем chromedriver
-	await browser.deleteSession();
-	chromedriver.stop();
-
-	const pageConfig: PageConfig = JSON.parse(pageConfigJson);
-
-	return {
-		csrfToken: pageConfig.csrfToken,
-		sessionId: pageConfig.counters.analytics.sessionId,
-		cookies,
-	};
 }
