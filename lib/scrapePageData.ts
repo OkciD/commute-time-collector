@@ -1,6 +1,7 @@
 import * as Webdriver from 'webdriver';
 import * as WebdriverIO from 'webdriverio';
 import * as chromedriver from 'chromedriver';
+import { logsDir } from '../utils/logger';
 
 export interface PageData {
 	csrfToken: string;
@@ -19,6 +20,7 @@ interface PageConfig {
 }
 
 const CHROMEDRIVER_PORT = 9515;
+let browser: WebdriverIO.BrowserObject;
 
 /**
  * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
@@ -29,11 +31,15 @@ export default async function scrapePageData(): Promise<PageData> {
 	try {
 		// запускаем chromedriver
 		// todo: no ts-ignore
-		// @ts-ignore
-		await chromedriver.start([`--port=${CHROMEDRIVER_PORT}`, '--url-base=wd/hub'], true);
+		await chromedriver.start([
+			`--port=${CHROMEDRIVER_PORT}`,
+			'--url-base=wd/hub',
+			process.env.NODE_ENV !== 'dev' && '--silent',
+			// @ts-ignore
+		], true);
 
 		// запускаем и настраиваем wdio
-		const browser: WebdriverIO.BrowserObject = await WebdriverIO.remote({
+		browser = await WebdriverIO.remote({
 			port: CHROMEDRIVER_PORT,
 			capabilities: {
 				browserName: 'chrome',
@@ -41,6 +47,7 @@ export default async function scrapePageData(): Promise<PageData> {
 					args: ['--headless', '--disable-gpu'], // используем headless chrome
 				},
 			},
+			...process.env.NODE_ENV !== 'dev' && { outputDir: logsDir },
 		});
 
 		// заходим на страницу Яндекс карт
@@ -60,10 +67,6 @@ export default async function scrapePageData(): Promise<PageData> {
 		// достаём все куки
 		const cookies: WebDriver.Cookie[] = await browser.getCookies();
 
-		// закрываем браузер, стопаем chromedriver
-		await browser.deleteSession();
-		chromedriver.stop();
-
 		const pageConfig: PageConfig = JSON.parse(pageConfigJson);
 
 		return {
@@ -71,9 +74,9 @@ export default async function scrapePageData(): Promise<PageData> {
 			sessionId: pageConfig.counters.analytics.sessionId,
 			cookies,
 		};
-	} catch (error) {
+	} finally {
+		// закрываем браузер, стопаем chromedriver
+		await browser.deleteSession();
 		chromedriver.stop();
-
-		throw error;
 	}
 }

@@ -3,6 +3,12 @@ import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
 import logger from './utils/logger';
 
+process.addListener('unhandledRejection', (reason?: {} | null) => {
+	console.error(reason);
+
+	process.exit(1);
+});
+
 (async (): Promise<void> => {
 	logger.info('Start');
 	const { csrfToken, sessionId, cookies }: PageData = await scrapePageData();
@@ -30,11 +36,7 @@ import logger from './utils/logger';
 		json: true,
 	});
 
-	// logger.info('Response OK', response);
+	logger.info('Response OK', response);
 
 	logger.info('Successful stop');
-})().catch((error) => {
-	logger.error(error);
-
-	process.exit(1);
-});
+})();

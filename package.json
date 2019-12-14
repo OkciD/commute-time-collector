@@ -7,7 +7,8 @@
     "start:prod": "NODE_ENV=prod ts-node ./index.ts",
     "tsc": "tsc",
     "lint": "eslint --ext .tsx --ext .ts --format codeframe './'",
-    "lint:fix": "eslint --debug --fix"
+    "lint:fix": "eslint --debug --fix",
+    "kill-chromedriver": "pkill chromedriver"
   },
   "author": "Yury Baykov",
   "license": "ISC",
@@ -54,5 +55,5 @@
       "git add"
     ]
   },
-  "logsDir": "/var/log/commute-time-collector"
+  "logsDir": "./logs"
 }
