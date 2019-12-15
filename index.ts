@@ -4,6 +4,8 @@ import requestPromise from 'request-promise-native';
 import logger from './utils/logger';
 import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
 import { AutoRoute, BuildRouteResponse } from './types';
+import params from './utils/params';
+import chalk from 'chalk';
 
 const performanceObserver: PerformanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
 	const entries: PerformanceEntry[] = list.getEntries();
@@ -17,6 +19,7 @@ performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: tru
 
 process.addListener('unhandledRejection', (reason?: {} | null) => {
 	logger.error(reason ?? 'Unknown error');
+	console.error(chalk.red('Unhandled rejection, reason: ', reason ?? 'Unknown error'));
 
 	process.exit(1);
 });
@@ -24,6 +27,18 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 (async (): Promise<void> => {
 	performance.mark('start');
 	logger.info('Start');
+
+	const { startCoords, endCoords } = params;
+
+	// todo: validate coords
+	if (!startCoords || !endCoords) {
+		console.error(chalk.red(
+			'Either start or end coordinates are not found. ' +
+			'Please make sure you have provided both --startCoords and --endCoords params',
+		));
+
+		process.exit(1);
+	}
 
 	performance.mark('scrapePageData:start');
 	const pageData: PageData = await scrapePageData();
@@ -33,7 +48,6 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	logger.info('Successfully scraped data from the page');
 
 	const { csrfToken, sessionId, cookies } = pageData;
-
 	const { body, timingPhases, statusCode, headers }: requestPromise.FullResponse = await requestPromise({
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
@@ -46,7 +60,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 			mode: 'best',
 			regionId: '213', // id Москвы (вроде бы необязательный параметр)
 			results: '6',
-			rll: '37.15833163671875,55.794240795394906~37.2764346640625,55.8746182642246', // todo: параметризовать
+			rll: `${startCoords}~${endCoords}`,
 			sessionId,
 			type: 'auto',
 		},

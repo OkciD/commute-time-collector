@@ -18,11 +18,13 @@
   },
   "private": true,
   "dependencies": {
+    "@types/chalk": "2.2.0",
     "@types/chromedriver": "2.38.0",
     "@types/minimist": "1.2.0",
     "@types/node": "12.12.17",
     "@types/request-promise-native": "1.0.17",
     "@types/winston": "2.4.4",
+    "chalk": "*",
     "chromedriver": "78.0.1",
     "fecha": "*",
     "minimist": "1.2.0",

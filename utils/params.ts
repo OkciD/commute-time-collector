@@ -6,6 +6,8 @@ interface Params extends minimist.ParsedArgs {
 	logsDir: string;
 	wdioLogLevel: WebDriver.WebDriverLogTypes,
 	chromedriverSilent: boolean,
+	startCoords: string;
+	endCoords: string;
 }
 
 const params: Params = minimist<Params>(process.argv.slice(2), {
