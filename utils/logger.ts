@@ -1,11 +1,11 @@
 import winston from 'winston';
 import fecha from 'fecha';
-import args from './args';
+import params from './params';
 import WebDriver from 'webdriver';
 import path from 'path';
 import fs from 'fs';
 
-const LOGS_DIR: string = args.logsDir;
+const LOGS_DIR: string = params.logsDir;
 const CURRENT_DATE_STR: string = fecha.format(new Date(), 'DD-MM-YYYY');
 const SESSION_ID: string = Math.random().toString(36).substr(2, 7); // рандомный хеш
 
@@ -14,7 +14,7 @@ export type CustomizedLogger = winston.Logger & {
 };
 
 export function getChromedriverLogArg(): string | null {
-	if (process.env.NODE_ENV !== 'dev' || args.chromedriverSilent) {
+	if (process.env.NODE_ENV !== 'dev' || params.chromedriverSilent) {
 		return '--silent';
 	}
 
@@ -30,7 +30,7 @@ export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, out
 	}
 
 	return {
-		logLevel: args.wdioLogLevel,
+		logLevel: params.wdioLogLevel,
 		...(process.env.NODE_ENV !== 'dev') && {
 			outputDir: dirPath,
 		},
