@@ -86,4 +86,12 @@ const devLogger: CustomizedLogger = winston.createLogger({
 	],
 }) as CustomizedLogger;
 
-export default process.env.NODE_ENV === 'dev' ? devLogger : prodLogger;
+const logger: CustomizedLogger = (process.env.NODE_ENV === 'dev') ? devLogger : prodLogger;
+
+export function createLocalLogger(module: NodeJS.Module): CustomizedLogger {
+	return logger.child({
+		module: module.filename.replace(process.cwd(), ''),
+	}) as CustomizedLogger;
+}
+
+export default logger;

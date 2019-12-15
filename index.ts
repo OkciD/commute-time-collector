@@ -26,11 +26,14 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	logger.info('Start');
 
 	performance.mark('scrapePageData:start');
-	const { csrfToken, sessionId, cookies }: PageData = await scrapePageData();
+	const pageData: PageData = await scrapePageData();
 	performance.mark('scrapePageData:end');
 	performance.measure('scrapePageData', 'scrapePageData:start', 'scrapePageData:end');
 
+	logger.info('Successfully scraped data from the page');
+
 	// todo: типизировать
+	const { csrfToken, sessionId, cookies } = pageData;
 	const response = await requestPromise({
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
@@ -53,7 +56,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 		json: true,
 	});
 
-	logger.info('Response OK',
+	logger.debug('Response OK',
 		response.data.routes.map(({ distance, duration, durationInTraffic, flags }: any) => ({
 			distance,
 			duration,
@@ -61,5 +64,5 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 			flags,
 		})));
 
-	logger.info('Successful stop');
+	logger.info('End');
 })();
