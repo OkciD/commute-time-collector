@@ -36,6 +36,8 @@ module.exports =  {
 			'error',
 			'after'
 		],
+		'import/extensions': 'off',
+		'import/no-unresolved': 'off'
 	},
 	env: {
 		node: true

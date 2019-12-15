@@ -3,6 +3,7 @@ import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
 import logger from './utils/logger';
 import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
+import { AutoRoute, BuildRouteResponse } from './types';
 
 const performanceObserver: PerformanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
 	const entries: PerformanceEntry[] = list.getEntries();
@@ -34,8 +35,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	const { csrfToken, sessionId, cookies } = pageData;
 
 	performance.mark('request:start');
-	// todo: типизировать
-	const response = await requestPromise({
+	const { data }: BuildRouteResponse = await requestPromise({
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
 		qs: {
@@ -60,7 +60,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	performance.measure('request', 'request:start', 'request:end');
 
 	logger.debug('Response OK',
-		response.data.routes.map(({ distance, duration, durationInTraffic, flags }: any) => ({
+		data.routes.map(({ distance, duration, durationInTraffic, flags }: AutoRoute) => ({
 			distance,
 			duration,
 			durationInTraffic,
