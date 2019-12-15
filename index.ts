@@ -34,8 +34,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 
 	const { csrfToken, sessionId, cookies } = pageData;
 
-	performance.mark('request:start');
-	const { data }: BuildRouteResponse = await requestPromise({
+	const { body, timingPhases, statusCode, headers }: requestPromise.FullResponse = await requestPromise({
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
 		qs: {
@@ -53,12 +52,25 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 		},
 
 		jar: prepareCookieJar(cookies),
-
 		json: true,
-	});
-	performance.mark('request:end');
-	performance.measure('request', 'request:start', 'request:end');
 
+		resolveWithFullResponse: true,
+		time: true,
+		simple: false,
+	});
+	logger.performance('Request', timingPhases);
+
+	if (statusCode !== 200) {
+		logger.error('Request', {
+			statusCode,
+			headers,
+			body: `${body.slice(0, 300)}...`,
+		});
+
+		return;
+	}
+
+	const { data } = body as BuildRouteResponse;
 	logger.debug('Response OK',
 		data.routes.map(({ distance, duration, durationInTraffic, flags }: AutoRoute) => ({
 			distance,
