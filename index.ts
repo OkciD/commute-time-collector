@@ -10,8 +10,6 @@ const performanceObserver: PerformanceObserver = new PerformanceObserver((list: 
 	entries.forEach(({ name, duration, entryType }: PerformanceEntry) => {
 		logger.performance(name, { duration, entryType });
 	});
-
-	performance.clearMarks();
 });
 
 performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: true });
@@ -23,6 +21,7 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 });
 
 (async (): Promise<void> => {
+	performance.mark('start');
 	logger.info('Start');
 
 	performance.mark('scrapePageData:start');
@@ -32,8 +31,10 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 
 	logger.info('Successfully scraped data from the page');
 
-	// todo: типизировать
 	const { csrfToken, sessionId, cookies } = pageData;
+
+	performance.mark('request:start');
+	// todo: типизировать
 	const response = await requestPromise({
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
@@ -55,6 +56,8 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 
 		json: true,
 	});
+	performance.mark('request:end');
+	performance.measure('request', 'request:start', 'request:end');
 
 	logger.debug('Response OK',
 		response.data.routes.map(({ distance, duration, durationInTraffic, flags }: any) => ({
@@ -65,4 +68,6 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 		})));
 
 	logger.info('End');
+	performance.mark('end');
+	performance.measure('total', 'start', 'end');
 })();
