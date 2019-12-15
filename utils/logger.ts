@@ -41,13 +41,15 @@ const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	error: 0,
 	warn: 1,
 	info: 2,
-	performance: 3,
+	debug: 3,
+	performance: 4,
 };
 
 winston.addColors({
 	error: 'red',
 	warn: 'yellow',
 	info: 'green',
+	debug: 'gray',
 	performance: 'blue',
 });
 

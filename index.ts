@@ -17,7 +17,7 @@ const performanceObserver: PerformanceObserver = new PerformanceObserver((list: 
 performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: true });
 
 process.addListener('unhandledRejection', (reason?: {} | null) => {
-	logger.error('Unhandled rejection', { reason });
+	logger.error(reason ?? 'Unknown error');
 
 	process.exit(1);
 });

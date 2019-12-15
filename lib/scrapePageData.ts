@@ -1,7 +1,7 @@
 import * as Webdriver from 'webdriver';
 import * as WebdriverIO from 'webdriverio';
 import * as chromedriver from 'chromedriver';
-import { getChromedriverLogArg, getWdioLogConfig } from '../utils/logger';
+import logger, { getChromedriverLogArg, getWdioLogConfig } from '../utils/logger';
 
 export interface PageData {
 	csrfToken: string;
@@ -77,6 +77,7 @@ export default async function scrapePageData(): Promise<PageData> {
 			cookies,
 		};
 	} finally {
+		logger.debug('scrapePageData finally');
 		// закрываем браузер, стопаем chromedriver
 		await browser.deleteSession();
 		chromedriver.stop();
