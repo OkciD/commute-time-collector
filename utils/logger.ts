@@ -9,7 +9,9 @@ const LOGS_DIR: string = args.logsDir;
 const CURRENT_DATE_STR: string = fecha.format(new Date(), 'DD-MM-YYYY');
 const SESSION_ID: string = Math.random().toString(36).substr(2, 7); // рандомный хеш
 
-export type Logger = winston.Logger;
+export type CustomizedLogger = winston.Logger & {
+	performance: winston.LeveledLogMethod
+};
 
 export function getChromedriverLogArg(): string | null {
 	if (process.env.NODE_ENV !== 'dev' || args.chromedriverSilent) {
@@ -35,10 +37,26 @@ export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, out
 	};
 }
 
-const prodLogger: Logger = winston.createLogger({
+const customLoggingLevels: winston.LoggerOptions['levels'] = {
+	error: 0,
+	warn: 1,
+	info: 2,
+	performance: 3,
+};
+
+winston.addColors({
+	error: 'red',
+	warn: 'yellow',
+	info: 'green',
+	performance: 'blue',
+});
+
+const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
 		sid: SESSION_ID,
 	},
+	levels: customLoggingLevels,
+	level: 'performance',
 	format: winston.format.combine(
 		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.errors({ stack: true }),
@@ -50,9 +68,11 @@ const prodLogger: Logger = winston.createLogger({
 			filename: `${CURRENT_DATE_STR}.log`,
 		}),
 	],
-});
+}) as CustomizedLogger;
 
-const devLogger: Logger = winston.createLogger({
+const devLogger: CustomizedLogger = winston.createLogger({
+	levels: customLoggingLevels,
+	level: 'performance',
 	format: winston.format.combine(
 		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.colorize({ all: true }),
@@ -62,6 +82,6 @@ const devLogger: Logger = winston.createLogger({
 	transports: [
 		new winston.transports.Console(),
 	],
-});
+}) as CustomizedLogger;
 
 export default process.env.NODE_ENV === 'dev' ? devLogger : prodLogger;

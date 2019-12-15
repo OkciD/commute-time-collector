@@ -2,16 +2,33 @@ import scrapePageData, { PageData } from './lib/scrapePageData';
 import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
 import logger from './utils/logger';
+import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
+
+const performanceObserver: PerformanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
+	const entries: PerformanceEntry[] = list.getEntries();
+
+	entries.forEach(({ name, duration, entryType }: PerformanceEntry) => {
+		logger.performance(name, { duration, entryType });
+	});
+
+	performance.clearMarks();
+});
+
+performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: true });
 
 process.addListener('unhandledRejection', (reason?: {} | null) => {
-	console.error(reason);
+	logger.error('Unhandled rejection', { reason });
 
 	process.exit(1);
 });
 
 (async (): Promise<void> => {
 	logger.info('Start');
+
+	performance.mark('scrapePageData:start');
 	const { csrfToken, sessionId, cookies }: PageData = await scrapePageData();
+	performance.mark('scrapePageData:end');
+	performance.measure('scrapePageData', 'scrapePageData:start', 'scrapePageData:end');
 
 	// todo: типизировать
 	const response = await requestPromise({
