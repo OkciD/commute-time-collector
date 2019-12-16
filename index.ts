@@ -74,11 +74,11 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	});
 	logger.performance('Request', timingPhases);
 
-	if (statusCode !== 200) {
+	if (statusCode !== 200 || body.error) {
 		logger.error('Request', {
 			statusCode,
 			headers,
-			body: `${body.slice(0, 300)}...`,
+			body: JSON.stringify(body).slice(0, 300),
 		});
 
 		return;
