@@ -6,7 +6,7 @@ import path from 'path';
 import fs from 'fs';
 
 const LOGS_DIR: string = params.logsDir;
-const CURRENT_DATE_STR: string = fecha.format(new Date(), 'DD-MM-YYYY');
+const CURRENT_DATE_STR: string = fecha.format(new Date(), 'YYYY-MM-DD');
 const SESSION_ID: string = Math.random().toString(36).substr(2, 7); // рандомный хеш
 
 export type CustomizedLogger = winston.Logger & {
