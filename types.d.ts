@@ -54,3 +54,11 @@ export interface AutoRoute {
 	colorizeInfo: Array<{ count: number; type: string; }>;
 	matchFilter: boolean;
 }
+
+export interface FilteredAutoRoute {
+	uuid: AutoRoute['uuid'],
+	distance: AutoRoute['distance']['value'],
+	duration: AutoRoute['duration']['value'],
+	durationInTraffic: AutoRoute['durationInTraffic']['value'],
+	flags: AutoRoute['flags'],
+}

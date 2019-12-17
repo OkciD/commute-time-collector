@@ -3,7 +3,7 @@ import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
 import logger, { cleanupWdioLogs } from './utils/logger';
 import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
-import { AutoRoute, BuildRouteResponse } from './types';
+import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from './types';
 import params from './utils/params';
 import chalk from 'chalk';
 
@@ -89,13 +89,15 @@ process.on('exit', () => {
 	}
 
 	const { data } = body as BuildRouteResponse;
-	logger.debug('Response OK',
-		data.routes.map(({ distance, duration, durationInTraffic, flags }: AutoRoute) => ({
-			distance,
-			duration,
-			durationInTraffic,
-			flags,
-		})));
+	const filteredRouteData: FilteredAutoRoute[] = data.routes.map((route: AutoRoute) => ({
+		uuid: route.uuid,
+		distance: route.distance.value,
+		duration: route.duration.value,
+		durationInTraffic: route.durationInTraffic.value,
+		flags: route.flags,
+	}));
+
+	logger.debug('Response OK', { filteredRouteData });
 
 	logger.info('End');
 	performance.mark('end');
