@@ -2,20 +2,10 @@ import scrapePageData, { PageData } from './lib/scrapePageData';
 import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
 import logger, { cleanupWdioLogs } from './utils/logger';
-import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
 import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from './types';
 import params from './utils/params';
 import chalk from 'chalk';
-
-const performanceObserver: PerformanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
-	const entries: PerformanceEntry[] = list.getEntries();
-
-	entries.forEach(({ name, duration, entryType }: PerformanceEntry) => {
-		logger.performance(name, { duration, entryType });
-	});
-});
-
-performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: true });
+import measuredAsyncFn from './utils/performance';
 
 process.addListener('unhandledRejection', (reason?: {} | null) => {
 	logger.error(reason ?? 'Unknown error');
@@ -28,8 +18,7 @@ process.on('exit', () => {
 	cleanupWdioLogs();
 });
 
-(async (): Promise<void> => {
-	performance.mark('start');
+async function main(): Promise<void> {
 	logger.info('Start');
 
 	const { startCoords, endCoords } = params;
@@ -44,10 +33,7 @@ process.on('exit', () => {
 		process.exit(1);
 	}
 
-	performance.mark('scrapePageData:start');
-	const pageData: PageData = await scrapePageData();
-	performance.mark('scrapePageData:end');
-	performance.measure('scrapePageData', 'scrapePageData:start', 'scrapePageData:end');
+	const pageData: PageData = await measuredAsyncFn(scrapePageData)();
 
 	logger.info('Successfully scraped data from the page');
 
@@ -100,6 +86,6 @@ process.on('exit', () => {
 	logger.debug('Response OK', { filteredRouteData });
 
 	logger.info('End');
-	performance.mark('end');
-	performance.measure('total', 'start', 'end');
-})();
+}
+
+measuredAsyncFn(main)();
