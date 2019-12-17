@@ -40,6 +40,7 @@ export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, out
 export function cleanupWdioLogs(): void {
 	const dirPath: string = path.join(LOGS_DIR, 'wdio-errors', CURRENT_DATE_STR, SESSION_ID);
 
+	// todo: удалять папки wdio-errors и CURRENT_DATE_STR, если они пустые
 	if (fs.existsSync(dirPath) && fs.readdirSync(dirPath).length === 0) {
 		fs.rmdirSync(dirPath);
 	}
