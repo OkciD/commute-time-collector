@@ -1,7 +1,7 @@
 import scrapePageData, { PageData } from './lib/scrapePageData';
 import prepareCookieJar from './lib/prepareCookieJar';
 import requestPromise from 'request-promise-native';
-import logger from './utils/logger';
+import logger, { cleanupWdioLogs } from './utils/logger';
 import { PerformanceObserver, PerformanceEntry, PerformanceObserverEntryList, performance } from 'perf_hooks';
 import { AutoRoute, BuildRouteResponse } from './types';
 import params from './utils/params';
@@ -22,6 +22,10 @@ process.addListener('unhandledRejection', (reason?: {} | null) => {
 	console.error(chalk.red('Unhandled rejection, reason: ', reason ?? 'Unknown error'));
 
 	process.exit(1);
+});
+
+process.on('exit', () => {
+	cleanupWdioLogs();
 });
 
 (async (): Promise<void> => {
