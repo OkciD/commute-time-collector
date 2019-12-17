@@ -15,20 +15,17 @@ performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: tru
 type AsyncFunc<A = any, R = any> = (...args: A[]) => Promise<R>;
 
 function measuredAsyncFn<Fn extends AsyncFunc>(fn: Fn): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
-	type A = Parameters<Fn>;
-	type R = ReturnType<Fn>;
-
 	const fnName: string = fn.name || 'Unnamed function';
 
-	return (...args: A[]) => {
+	return async (...args: Parameters<Fn>) => {
 		performance.mark(`${fnName}:start`);
 
-		return fn(...args).then((result: R) => {
-			performance.mark(`${fnName}:end`);
-			performance.measure(fnName, `${fnName}:start`, `${fnName}:end`);
+		const result: ReturnType<Fn> = await fn(...args);
 
-			return result;
-		});
+		performance.mark(`${fnName}:end`);
+		performance.measure(fnName, `${fnName}:start`, `${fnName}:end`);
+
+		return result;
 	};
 }
 
