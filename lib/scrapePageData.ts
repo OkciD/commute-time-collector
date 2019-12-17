@@ -57,7 +57,10 @@ export default async function scrapePageData(): Promise<PageData> {
 
 		// заходим на страницу Яндекс карт
 		await browser.url('https://yandex.ru/maps');
-		localLogger.debug('Yandex maps page has been loaded', { url: await browser.getUrl() });
+		localLogger.debug('Navigated to url', {
+			expected: 'https://yandex.ru/maps',
+			actual: await browser.getUrl(),
+		});
 
 		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
 		const pageConfigJson: string | undefined = await browser.execute<string | undefined>(() => {
