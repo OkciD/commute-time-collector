@@ -11,10 +11,10 @@ const performanceObserver: PerformanceObserver = new PerformanceObserver((list: 
 
 performanceObserver.observe({ entryTypes: ['measure', 'function'], buffered: true });
 
-
 type AsyncFunc<A = any, R = any> = (...args: A[]) => Promise<R>;
+type SyncFunc<A = any, R = any> = (...args: A[]) => R;
 
-function measuredAsyncFn<Fn extends AsyncFunc>(fn: Fn): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
+export function measuredAsyncFn<Fn extends AsyncFunc>(fn: Fn): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
 	const fnName: string = fn.name || 'unnamedFunction';
 
 	return async (...args: Parameters<Fn>) => {
@@ -29,4 +29,4 @@ function measuredAsyncFn<Fn extends AsyncFunc>(fn: Fn): (...args: Parameters<Fn>
 	};
 }
 
-export default measuredAsyncFn;
+export const measuredSyncFn: <Fn extends SyncFunc>(fn: Fn) => Fn = performance.timerify;
