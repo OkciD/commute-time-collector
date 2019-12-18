@@ -1,15 +1,14 @@
-import scrapePageData, { PageData } from './lib/scrapePageData';
-import prepareCookieJar from './lib/prepareCookieJar';
-import requestPromise from 'request-promise-native';
+import scrapeCredentials, { Credentials } from './lib/scrapeCredentials';
 import logger, { cleanupWdioLogs } from './utils/logger';
-import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from './types';
 import params from './utils/params';
 import chalk from 'chalk';
 import measuredAsyncFn from './utils/performance';
+import { FilteredAutoRoute } from './types';
+import getRoutes from './lib/getRoutes';
 
 process.addListener('unhandledRejection', (reason?: {} | null) => {
-	logger.error(reason ?? 'Unknown error');
-	console.error(chalk.red('Unhandled rejection, reason: ', reason ?? 'Unknown error'));
+	logger.error('Unhandled rejection', { reason });
+	console.error(chalk.red('Unhandled rejection, reason: ', reason));
 
 	process.exit(1);
 });
@@ -33,57 +32,16 @@ async function main(): Promise<void> {
 		process.exit(1);
 	}
 
-	const pageData: PageData = await measuredAsyncFn(scrapePageData)();
+	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
+	logger.info('Successfully scraped credentials from the page');
 
-	logger.info('Successfully scraped data from the page');
+	const routes: FilteredAutoRoute[] | null = await getRoutes(startCoords, endCoords, credentials);
 
-	const { csrfToken, sessionId, cookies } = pageData;
-	const { body, timingPhases, statusCode, headers }: requestPromise.FullResponse = await requestPromise({
-		uri: 'https://yandex.ru/maps/api/router/buildRoute',
-		method: 'GET',
-		qs: {
-			ajax: 1,
-			csrfToken,
-			ignoreTravelModes: 'avia',
-			lang: 'ru',
-			locale: 'ru_RU',
-			mode: 'best',
-			regionId: '213', // id Москвы (вроде бы необязательный параметр)
-			results: '6',
-			rll: `${startCoords}~${endCoords}`,
-			sessionId,
-			type: 'auto',
-		},
-
-		jar: prepareCookieJar(cookies),
-		json: true,
-
-		resolveWithFullResponse: true,
-		time: true,
-		simple: false,
-	});
-	logger.performance('Request', timingPhases);
-
-	if (statusCode !== 200 || body.error) {
-		logger.error('Request', {
-			statusCode,
-			headers,
-			body: JSON.stringify(body).slice(0, 300),
-		});
-
+	if (!routes) {
+		logger.error('Failed to fetch routes');
 		return;
 	}
-
-	const { data } = body as BuildRouteResponse;
-	const filteredRouteData: FilteredAutoRoute[] = data.routes.map((route: AutoRoute) => ({
-		uuid: route.uuid,
-		distance: route.distance.value,
-		duration: route.duration.value,
-		durationInTraffic: route.durationInTraffic.value,
-		flags: route.flags,
-	}));
-
-	logger.debug('Response OK', { filteredRouteData });
+	logger.info('Successfully fetched routes data');
 
 	logger.info('End');
 }

@@ -3,7 +3,7 @@ import * as WebdriverIO from 'webdriverio';
 import * as chromedriver from 'chromedriver';
 import { createLocalLogger, CustomizedLogger, getChromedriverLogArg, getWdioLogConfig } from '../utils/logger';
 
-export interface PageData {
+export interface Credentials {
 	csrfToken: string;
 	sessionId: string;
 	cookies: Webdriver.Cookie[];
@@ -26,11 +26,11 @@ let browser: WebdriverIO.BrowserObject;
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 /**
- * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
+ * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку креды
  * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
- * @return {Promise<PageData>}
+ * @return {Promise<Credentials>}
  */
-export default async function scrapePageData(): Promise<PageData> {
+export default async function scrapeCredentials(): Promise<Credentials> {
 	try {
 		// запускаем chromedriver
 		// todo: no ts-ignore
@@ -82,12 +82,12 @@ export default async function scrapePageData(): Promise<PageData> {
 		const cookies: WebDriver.Cookie[] = await browser.getCookies();
 		localLogger.debug('Cookies', { value: cookies });
 
-		const result: PageData = {
+		const result: Credentials = {
 			csrfToken: pageConfig.csrfToken,
 			sessionId: pageConfig.counters.analytics.sessionId,
 			cookies,
 		};
-		localLogger.debug('Returning page data', { value: result });
+		localLogger.debug('Returned value', { value: result });
 
 		return result;
 	} finally {

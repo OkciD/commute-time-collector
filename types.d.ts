@@ -60,5 +60,5 @@ export interface FilteredAutoRoute {
 	distance: AutoRoute['distance']['value'],
 	duration: AutoRoute['duration']['value'],
 	durationInTraffic: AutoRoute['durationInTraffic']['value'],
-	flags: AutoRoute['flags'],
+	flags: Pick<AutoRoute['flags'], 'blocked' | 'hasTolls' | 'futureBlocked' | 'deadJam'>,
 }
