@@ -93,8 +93,12 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 	} finally {
 		localLogger.debug('Got into the "finally" section');
 
-		await browser.deleteSession();
-		localLogger.debug('Deleted browser session');
+		if (browser) {
+			await browser.deleteSession();
+			localLogger.debug('Deleted browser session');
+		} else {
+			localLogger.debug('Browser object doesnt exist', { typeofBrowserObject: typeof browser });
+		}
 
 		chromedriver.stop();
 		localLogger.debug('Stopped chromedriver');
