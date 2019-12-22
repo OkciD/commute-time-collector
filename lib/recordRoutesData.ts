@@ -1,11 +1,11 @@
 import csvStringify from 'csv-stringify/lib/sync';
 import { FilteredAutoRoute } from '../types';
 import flat from 'flat';
-import { SessionData } from '../utils/sessionData';
+import sessionData from '../utils/sessionData';
 import fs from 'fs';
 import path from 'path';
 
-export default function recordRoutesData(outDir: string, routes: FilteredAutoRoute[], sessionData: SessionData) {
+export default function recordRoutesData(outDir: string, routes: FilteredAutoRoute[]) {
 	const outFilePath: string = path.join(outDir, `${sessionData.date}.csv`);
 	const resultsFileAlreadyExists: boolean = fs.existsSync(outFilePath);
 	const shouldGenerateHeader: boolean = !resultsFileAlreadyExists;
@@ -35,6 +35,10 @@ export default function recordRoutesData(outDir: string, routes: FilteredAutoRou
 			boolean: (value: boolean) => JSON.stringify(value),
 		},
 	});
+
+	if (!fs.existsSync(outDir)) {
+		fs.mkdirSync(outDir, { recursive: true });
+	}
 
 	fs.appendFileSync(outFilePath, csvString);
 }

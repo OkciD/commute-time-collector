@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { measuredAsyncFn } from './utils/performance';
 import { FilteredAutoRoute } from './types';
 import getRoutes from './lib/getRoutes';
+import recordRoutesData from './lib/recordRoutesData';
 
 process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
 	logger.error('Unhandled rejection', { reason: (reason as Error)?.stack });
@@ -42,6 +43,8 @@ async function main(): Promise<void> {
 		return;
 	}
 	logger.info('Successfully fetched routes data');
+
+	recordRoutesData(params.outDir, routes);
 
 	logger.info('End');
 }
