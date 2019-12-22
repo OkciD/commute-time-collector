@@ -69,7 +69,7 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 			return scriptElement?.innerHTML;
 		});
 
-		if (typeof pageConfigJson === 'undefined') {
+		if (typeof pageConfigJson === 'undefined' || pageConfigJson === null) {
 			throw new Error('Unable to find config on the page');
 		}
 

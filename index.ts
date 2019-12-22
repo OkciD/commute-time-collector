@@ -6,9 +6,9 @@ import { measuredAsyncFn } from './utils/performance';
 import { FilteredAutoRoute } from './types';
 import getRoutes from './lib/getRoutes';
 
-process.addListener('unhandledRejection', (reason?: {} | null) => {
-	logger.error('Unhandled rejection', { reason });
-	console.error(chalk.red('Unhandled rejection, reason: ', reason));
+process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
+	logger.error('Unhandled rejection', { reason: (reason as Error)?.stack });
+	console.error(chalk.red('Unhandled rejection, reason: ', (reason as Error)?.stack));
 
 	process.exit(1);
 });
