@@ -10,6 +10,7 @@ import recordRoutesData from './lib/recordRoutesData';
 process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
 	logger.error('Unhandled rejection', { reason: (reason as Error)?.stack });
 	console.error(chalk.red('Unhandled rejection, reason: ', (reason as Error)?.stack));
+	logger.end();
 
 	process.exit(1);
 });
@@ -19,8 +20,6 @@ process.on('exit', () => {
 });
 
 async function main(): Promise<void> {
-	logger.info('Start');
-
 	const { startCoords, endCoords } = params;
 
 	// todo: validate coords
@@ -32,6 +31,8 @@ async function main(): Promise<void> {
 
 		process.exit(1);
 	}
+
+	logger.info('Start');
 
 	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
 	logger.info('Successfully scraped credentials from the page');
