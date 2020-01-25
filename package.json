@@ -19,6 +19,7 @@
   "private": true,
   "dependencies": {
     "@types/chromedriver": "2.38.0",
+    "@types/delete-empty": "2.0.0",
     "@types/flat": "0.0.28",
     "@types/minimist": "1.2.0",
     "@types/node": "13.1.8",
@@ -26,6 +27,7 @@
     "chalk": "*",
     "chromedriver": "79.0.0",
     "csv-stringify": "5.3.6",
+    "delete-empty": "3.0.0",
     "fecha": "*",
     "flat": "5.0.0",
     "minimist": "1.2.0",

@@ -1,11 +1,12 @@
 import scrapeCredentials, { Credentials } from './lib/scrapeCredentials';
-import logger, { cleanupWdioLogs } from './utils/logger';
+import logger from './utils/logger';
 import params from './utils/params';
 import chalk from 'chalk';
 import { measuredAsyncFn, measuredSyncFn } from './utils/performance';
 import { FilteredAutoRoute } from './types';
 import getRoutes from './lib/getRoutes';
 import recordRoutesData from './lib/recordRoutesData';
+import deleteEmpty from 'delete-empty';
 
 process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
 	const stack = (reason as Error)?.stack;
@@ -18,7 +19,8 @@ process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
 });
 
 process.on('exit', () => {
-	cleanupWdioLogs();
+	// удаляем пустые папки логов wdio
+	deleteEmpty.sync(params.logsDir);
 });
 
 async function main(): Promise<void> {
