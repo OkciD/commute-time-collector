@@ -13,14 +13,6 @@ export type CustomizedLogger = winston.Logger & {
 	performance: winston.LeveledLogMethod
 };
 
-export function getChromedriverLogArg(): string | null {
-	if (process.env.NODE_ENV !== 'dev' || params.chromedriverSilent) {
-		return '--silent';
-	}
-
-	return null;
-}
-
 export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, outputDir?: string } {
 	const dirPath: string = path.join(LOGS_DIR, 'wdio-errors', CURRENT_DATE_STR, SESSION_ID);
 

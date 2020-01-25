@@ -1,7 +1,7 @@
 import * as Webdriver from 'webdriver';
 import * as WebdriverIO from 'webdriverio';
 import * as chromedriver from 'chromedriver';
-import { createLocalLogger, CustomizedLogger, getChromedriverLogArg, getWdioLogConfig } from '../utils/logger';
+import { createLocalLogger, CustomizedLogger, getWdioLogConfig } from '../utils/logger';
 
 export interface Credentials {
 	csrfToken: string;
@@ -38,7 +38,7 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		await chromedriver.start([
 			`--port=${CHROMEDRIVER_PORT}`,
 			'--url-base=wd/hub',
-			getChromedriverLogArg(),
+			'--silent',
 			// @ts-ignore
 		], true);
 		localLogger.debug('Started chromedriver');
