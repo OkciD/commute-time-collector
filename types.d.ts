@@ -31,14 +31,8 @@ export interface AutoRoute {
 		value: number;
 		test: string;
 	};
-	duration: {
-		value: number;
-		test: string;
-	};
-	durationInTraffic: {
-		value: number;
-		test: string;
-	};
+	duration: number;
+	durationInTraffic: number;
 	bounds: Array<[number, number]>;
 	encodedCoordinates: string;
 	flags: {

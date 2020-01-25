@@ -62,8 +62,8 @@ export default async function getRoutes(
 	const filteredRoutes: FilteredAutoRoute[] = data.routes.map((route: AutoRoute) => ({
 		uuid: route.uuid,
 		distance: route.distance.value,
-		duration: route.duration.value,
-		durationInTraffic: route.durationInTraffic.value,
+		duration: route.duration,
+		durationInTraffic: route.durationInTraffic,
 		flags: {
 			blocked: route.flags.blocked,
 			hasTolls: route.flags.hasTolls,
