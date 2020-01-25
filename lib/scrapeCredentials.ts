@@ -21,8 +21,6 @@ interface PageConfig {
 
 const CHROMEDRIVER_PORT = 9515;
 
-// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
-let browser: WebdriverIO.BrowserObject;
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 /**
@@ -31,6 +29,9 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
  * @return {Promise<Credentials>}
  */
 export default async function scrapeCredentials(): Promise<Credentials> {
+	// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
+	let browser: WebdriverIO.BrowserObject | null = null;
+
 	try {
 		// запускаем chromedriver
 		// todo: no ts-ignore
