@@ -51,7 +51,7 @@ export default async function getRoutes(
 		return null;
 	}
 
-	localLogger.debug('API response OK', {
+	localLogger.debug('Request succeeded', {
 		response: {
 			...response,
 			body: '<omitted>',
