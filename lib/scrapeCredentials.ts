@@ -73,7 +73,7 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 			throw new Error('Unable to find config on the page');
 		}
 
-		localLogger.debug('Config script has been found', { value: `${pageConfigJson.slice(0, 100)}...` });
+		localLogger.debug('Config script has been found', { valueSlice: `${pageConfigJson.slice(0, 100)}...` });
 
 		const pageConfig: PageConfig = JSON.parse(pageConfigJson);
 		localLogger.debug('Page config parsed successfully');
