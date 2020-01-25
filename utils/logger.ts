@@ -14,16 +14,17 @@ export type CustomizedLogger = winston.Logger & {
 };
 
 export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, outputDir?: string } {
-	const dirPath: string = path.join(LOGS_DIR, 'wdio-errors', CURRENT_DATE_STR, SESSION_ID);
+	const dirPath: string = path.join(LOGS_DIR, 'wdio', SESSION_ID);
+	const isSilent: boolean = params.wdioLogLevel === 'silent';
 
 	// wdio не умеет создавать себе папку для логов, если её нет, так что позаботимся о нём
-	if (process.env.NODE_ENV !== 'dev') {
+	if (!isSilent) {
 		fs.mkdirSync(dirPath, { recursive: true });
 	}
 
 	return {
 		logLevel: params.wdioLogLevel,
-		...(process.env.NODE_ENV !== 'dev') && {
+		...(!isSilent) && {
 			outputDir: dirPath,
 		},
 	};
