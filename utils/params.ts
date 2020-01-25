@@ -1,11 +1,10 @@
 import minimist from 'minimist';
 import WebDriver from 'webdriver';
-import packageJson from '../package.json';
+import path from 'path';
 
 interface Params extends minimist.ParsedArgs {
 	logsDir: string;
 	wdioLogLevel: WebDriver.WebDriverLogTypes;
-	chromedriverSilent: boolean;
 	startCoords: string;
 	endCoords: string;
 	outDir: string;
@@ -13,9 +12,8 @@ interface Params extends minimist.ParsedArgs {
 
 const params: Params = minimist<Params>(process.argv.slice(2), {
 	default: {
-		logsDir: packageJson.logsDir,
+		logsDir: path.resolve('logs'),
 		wdioLogLevel: 'error',
-		chromedriverSilent: false,
 	},
 });
 

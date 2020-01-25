@@ -59,6 +59,5 @@
       "npm run lint:fix",
       "git add"
     ]
-  },
-  "logsDir": "./logs"
+  }
 }
