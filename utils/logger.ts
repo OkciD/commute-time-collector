@@ -90,7 +90,7 @@ const logger: CustomizedLogger = (process.env.NODE_ENV === 'dev') ? devLogger : 
 
 export function createLocalLogger(module: NodeJS.Module): CustomizedLogger {
 	return logger.child({
-		module: module.filename.replace(process.cwd(), ''),
+		module: path.parse(module.filename).name,
 	}) as CustomizedLogger;
 }
 
