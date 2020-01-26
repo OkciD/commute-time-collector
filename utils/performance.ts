@@ -1,10 +1,10 @@
 import { performance, PerformanceEntry, PerformanceObserver, PerformanceObserverEntryList } from 'perf_hooks';
 import logger from './logger';
 
-const performanceObserver: PerformanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
+const performanceObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
 	const entries: PerformanceEntry[] = list.getEntries();
 
-	entries.forEach(({ name, duration, entryType }: PerformanceEntry) => {
+	entries.forEach(({ name, duration, entryType }) => {
 		logger.performance(name, { duration, entryType });
 	});
 });
