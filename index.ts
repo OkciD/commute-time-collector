@@ -34,7 +34,7 @@ async function main(): Promise<void> {
 		);
 	}
 
-	logger.info('Start');
+	logger.info('Start', { params });
 
 	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
 	logger.info('Successfully scraped credentials from the page');
