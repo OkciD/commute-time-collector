@@ -39,12 +39,7 @@ async function main(): Promise<void> {
 	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
 	logger.info('Successfully scraped credentials from the page');
 
-	const routes: FilteredAutoRoute[] | null = await getRoutes(startCoords, endCoords, credentials);
-
-	if (!routes) {
-		logger.error('Failed to fetch routes');
-		return;
-	}
+	const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
 	logger.info('Successfully fetched routes data');
 
 	measuredSyncFn(recordRoutesData)(params.outDir, routes);

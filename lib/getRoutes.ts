@@ -10,7 +10,7 @@ export default async function getRoutes(
 	startCoords: string,
 	endCoords: string,
 	credentials: Credentials,
-): Promise<FilteredAutoRoute[] | null> {
+): Promise<FilteredAutoRoute[]> {
 	const { csrfToken, sessionId, cookies } = credentials;
 
 	const options: requestPromise.OptionsWithUri = {
@@ -47,8 +47,7 @@ export default async function getRoutes(
 
 	if (statusCode !== 200 || body.error) {
 		localLogger.error('Request failed', { response: response.toJSON() });
-
-		return null;
+		throw new Error('Failed to get routes');
 	}
 
 	localLogger.debug('Request succeeded', {
