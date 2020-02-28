@@ -2,7 +2,7 @@ import request from 'request';
 // @ts-ignore
 import cheerio from 'cheerio';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
-import callViaTor from '../utils/callViaTor';
+import torRequest from '../utils/torRequest';
 
 export interface Credentials {
 	csrfToken: string;
@@ -30,7 +30,7 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
 export default async function scrapeCredentials(): Promise<Credentials> {
 	const cookieJar: request.CookieJar = request.jar();
 
-	const response: request.Response = await callViaTor({
+	const response: request.Response = await torRequest({
 		url: 'https://yandex.ru/maps/',
 		jar: cookieJar,
 	});

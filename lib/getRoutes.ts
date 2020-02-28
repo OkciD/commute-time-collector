@@ -1,7 +1,7 @@
 import { Credentials } from './scrapeCredentials';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from '../types';
-import callViaTor from '../utils/callViaTor';
+import torRequest from '../utils/torRequest';
 import request from 'request';
 
 const localLogger: CustomizedLogger = createLocalLogger(module);
@@ -34,7 +34,7 @@ export default async function getRoutes(
 		json: true,
 	};
 
-	const { body }: request.Response = await callViaTor(options);
+	const { body }: request.Response = await torRequest(options);
 
 	const { data } = body as BuildRouteResponse;
 	const filteredRoutes: FilteredAutoRoute[] = data.routes.map((route: AutoRoute) => ({
