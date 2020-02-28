@@ -1,7 +1,7 @@
 import csvStringify from 'csv-stringify/lib/sync';
 import { FilteredAutoRoute } from '../types';
 import flat from 'flat';
-import sessionData from '../utils/context';
+import context from '../utils/context';
 import fs from 'fs';
 import path from 'path';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
@@ -23,7 +23,7 @@ interface CsvRowObject {
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 export default function recordRoutesData(outDir: string, routes: FilteredAutoRoute[]) {
-	const outFilePath: string = path.join(outDir, `${sessionData.date}.csv`);
+	const outFilePath: string = path.join(outDir, `${context.date}.csv`);
 	const outFileAlreadyExists: boolean = fs.existsSync(outFilePath);
 	const shouldGenerateHeader: boolean = !outFileAlreadyExists;
 
@@ -31,7 +31,7 @@ export default function recordRoutesData(outDir: string, routes: FilteredAutoRou
 
 	const csvRowsObjects: CsvRowObject[] = routes.map((route) => ({
 		...flat.flatten(route),
-		sessionData,
+		sessionData: context,
 	}));
 
 	const csvString: string = csvStringify(csvRowsObjects, {

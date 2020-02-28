@@ -6,14 +6,14 @@ interface Params extends minimist.ParsedArgs {
 	startCoords: string;
 	endCoords: string;
 	outDir: string;
-	torIp: string;
+	torHost: string;
 	torPorts: string;
 }
 
 const parsedParams: Params = minimist<Params>(process.argv.slice(2), {
 	default: {
 		logsDir: path.resolve('logs'),
-		torIp: '127.0.0.1',
+		torHost: '127.0.0.1',
 		torPorts: '9050',
 	},
 });

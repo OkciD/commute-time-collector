@@ -15,7 +15,7 @@ const torPortsIterator = endlessGenerator(params.torPorts);
 export default function callViaTor(requestOptions: request.OptionsWithUrl): Promise<request.Response> {
 	const torPort: number = +torPortsIterator.next().value;
 
-	torRequest.setTorAddress(params.torIp, torPort);
+	torRequest.setTorAddress(params.torHost, torPort);
 
 	const promisifiedTorRequest = util.promisify(torRequest.request as typeof request);
 
