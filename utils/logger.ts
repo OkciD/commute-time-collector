@@ -1,8 +1,6 @@
 import winston from 'winston';
 import params from './params';
-import WebDriver from 'webdriver';
 import path from 'path';
-import fs from 'fs';
 import sessionData from './context';
 
 const LOGS_DIR: string = params.logsDir;
@@ -12,23 +10,6 @@ const SESSION_ID: string = sessionData.id;
 export type CustomizedLogger = winston.Logger & {
 	performance: winston.LeveledLogMethod
 };
-
-export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, outputDir?: string } {
-	const dirPath: string = path.join(LOGS_DIR, 'wdio', SESSION_ID);
-	const isSilent: boolean = params.wdioLogLevel === 'silent';
-
-	// wdio не умеет создавать себе папку для логов, если её нет, так что позаботимся о нём
-	if (!isSilent) {
-		fs.mkdirSync(dirPath, { recursive: true });
-	}
-
-	return {
-		logLevel: params.wdioLogLevel,
-		...(!isSilent) && {
-			outputDir: dirPath,
-		},
-	};
-}
 
 const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	error: 0,

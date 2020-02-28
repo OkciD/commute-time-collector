@@ -1,9 +1,8 @@
 import request from 'request';
 // @ts-ignore
-import torRequest from 'tor-request';
 import cheerio from 'cheerio';
-import util from 'util';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
+import callViaTor from '../utils/callViaTor';
 
 export interface Credentials {
 	csrfToken: string;
@@ -31,20 +30,9 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
 export default async function scrapeCredentials(): Promise<Credentials> {
 	const cookieJar: request.CookieJar = request.jar();
 
-	torRequest.setTorAddress('127.0.0.1', 9050);
-
-	const promisifiedTorRequest = util.promisify(torRequest.request as typeof request);
-
-	const response: request.Response = await promisifiedTorRequest({
+	const response: request.Response = await callViaTor({
 		url: 'https://yandex.ru/maps/',
 		jar: cookieJar,
-	}).then((res: request.Response) => {
-		if (res.statusCode !== 200) {
-			// todo: omit body if html
-			throw res;
-		}
-
-		return res;
 	});
 
 	const $ = cheerio.load(response.body);
