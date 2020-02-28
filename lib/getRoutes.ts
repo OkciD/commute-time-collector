@@ -1,6 +1,5 @@
 import { Credentials } from './scrapeCredentials';
 import requestPromise from 'request-promise-native';
-import prepareCookieJar from './prepareCookieJar';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from '../types';
 
@@ -11,7 +10,7 @@ export default async function getRoutes(
 	endCoords: string,
 	credentials: Credentials,
 ): Promise<FilteredAutoRoute[]> {
-	const { csrfToken, sessionId, cookies } = credentials;
+	const { csrfToken, sessionId, cookieJar } = credentials;
 
 	const options: requestPromise.OptionsWithUri = {
 		uri: 'https://yandex.ru/maps/api/router/buildRoute',
@@ -30,7 +29,7 @@ export default async function getRoutes(
 			type: 'auto',
 		},
 
-		jar: prepareCookieJar(cookies),
+		jar: cookieJar,
 		json: true,
 
 		resolveWithFullResponse: true,

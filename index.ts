@@ -9,10 +9,9 @@ import recordRoutesData from './lib/recordRoutesData';
 import deleteEmpty from 'delete-empty';
 
 process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
-	const stack = (reason as Error)?.stack;
-
-	logger.error('Unhandled rejection', { reason: stack });
-	console.error(chalk.red('Unhandled rejection, reason: ', stack));
+	const error = (reason instanceof Error) ? reason.stack : reason;
+	logger.error('Unhandled rejection', { error });
+	// console.error(chalk.red('Unhandled rejection, reason: ', reason));
 
 	logger.end();
 	process.exit(1);
@@ -39,7 +38,7 @@ async function main(): Promise<void> {
 	const credentials: Credentials = await measuredSyncFn(scrapeCredentials)();
 	logger.info('Successfully scraped credentials from the page');
 
-	// const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
+	const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
 	// logger.info('Successfully fetched routes data');
 	//
 	// measuredSyncFn(recordRoutesData)(params.outDir, routes);
