@@ -42,7 +42,13 @@ module.exports =  {
 			'after'
 		],
 		'import/extensions': 'off',
-		'import/no-unresolved': 'off'
+		'import/no-unresolved': 'off',
+		'no-plusplus': [
+			'error',
+			{
+				'allowForLoopAfterthoughts': true
+			}
+		]
 	},
 	env: {
 		node: true
