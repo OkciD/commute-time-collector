@@ -1,7 +1,7 @@
 import csvStringify from 'csv-stringify/lib/sync';
 import { FilteredAutoRoute } from '../types';
 import flat from 'flat';
-import sessionData from '../utils/sessionData';
+import sessionData from '../utils/context';
 import fs from 'fs';
 import path from 'path';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';

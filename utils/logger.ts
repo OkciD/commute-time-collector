@@ -3,7 +3,7 @@ import params from './params';
 import WebDriver from 'webdriver';
 import path from 'path';
 import fs from 'fs';
-import sessionData from './sessionData';
+import sessionData from './context';
 
 const LOGS_DIR: string = params.logsDir;
 const CURRENT_DATE_STR: string = sessionData.date;
