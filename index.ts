@@ -36,14 +36,14 @@ async function main(): Promise<void> {
 
 	logger.info('Start', { params });
 
-	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
+	const credentials: Credentials = await measuredSyncFn(scrapeCredentials)();
 	logger.info('Successfully scraped credentials from the page');
 
-	const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
-	logger.info('Successfully fetched routes data');
-
-	measuredSyncFn(recordRoutesData)(params.outDir, routes);
-	logger.info('Routes data has been written to a file');
+	// const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
+	// logger.info('Successfully fetched routes data');
+	//
+	// measuredSyncFn(recordRoutesData)(params.outDir, routes);
+	// logger.info('Routes data has been written to a file');
 
 	logger.info('End');
 }

@@ -1,7 +1,8 @@
 import * as Webdriver from 'webdriver';
-import * as WebdriverIO from 'webdriverio';
-import * as chromedriver from 'chromedriver';
-import { createLocalLogger, CustomizedLogger, getWdioLogConfig } from '../utils/logger';
+import request from 'request';
+// @ts-ignore
+import torRequest from 'tor-request';
+import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 
 export interface Credentials {
 	csrfToken: string;
@@ -19,8 +20,6 @@ interface PageConfig {
 	};
 }
 
-const CHROMEDRIVER_PORT = 9515;
-
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 /**
@@ -28,80 +27,15 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
  * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
  * @return {Promise<Credentials>}
  */
-export default async function scrapeCredentials(): Promise<Credentials> {
-	// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
-	let browser: WebdriverIO.BrowserObject | null = null;
+// @ts-ignore
+export default async function scrapeCredentials(): Credentials {
+	const cokieJar: request.CookieJar = request.jar();
 
-	try {
-		// запускаем chromedriver
-		// todo: no ts-ignore
-		await chromedriver.start([
-			`--port=${CHROMEDRIVER_PORT}`,
-			'--url-base=wd/hub',
-			'--silent',
-			// @ts-ignore
-		], true);
-		localLogger.debug('Started chromedriver');
-
-		// запускаем и настраиваем wdio
-		browser = await WebdriverIO.remote({
-			port: CHROMEDRIVER_PORT,
-			capabilities: {
-				browserName: 'chrome',
-				'goog:chromeOptions': {
-					args: ['--headless', '--disable-gpu'], // используем headless chrome
-				},
-			},
-			...getWdioLogConfig(),
-		});
-		localLogger.debug('Initialized WDIO');
-
-		// заходим на страницу Яндекс карт
-		await browser.url('https://yandex.ru/maps');
-		localLogger.debug('Navigated to url', {
-			expected: 'https://yandex.ru/maps',
-			actual: await browser.getUrl(),
-		});
-
-		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
-		const pageConfigJson: string | undefined = await browser.execute<string | undefined>(() => {
-			const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
-
-			return scriptElement?.innerHTML;
-		});
-
-		if (typeof pageConfigJson === 'undefined' || pageConfigJson === null) {
-			throw new Error('Unable to find config on the page');
+	torRequest.request('https://yandex.ru/maps/', {
+		jar: cokieJar,
+	}, (err: unknown, res: request.Response /* , body: unknown */) => {
+		if (!err && res.statusCode === 200) {
+			console.log(cokieJar.getCookieString('https://yandex.ru/maps'));
 		}
-
-		localLogger.debug('Config script has been found', { valueSlice: `${pageConfigJson.slice(0, 100)}...` });
-
-		const pageConfig: PageConfig = JSON.parse(pageConfigJson);
-		localLogger.debug('Page config parsed successfully');
-
-		// достаём все куки
-		const cookies: WebDriver.Cookie[] = await browser.getCookies();
-		localLogger.debug('Cookies', { value: cookies });
-
-		const result: Credentials = {
-			csrfToken: pageConfig.csrfToken,
-			sessionId: pageConfig.counters.analytics.sessionId,
-			cookies,
-		};
-		localLogger.debug('Returned value', { value: result });
-
-		return result;
-	} finally {
-		localLogger.debug('Got into the "finally" section');
-
-		if (browser) {
-			await browser.deleteSession();
-			localLogger.debug('Deleted browser session');
-		} else {
-			localLogger.debug('Browser object doesnt exist', { typeofBrowserObject: typeof browser });
-		}
-
-		chromedriver.stop();
-		localLogger.debug('Stopped chromedriver');
-	}
+	});
 }
