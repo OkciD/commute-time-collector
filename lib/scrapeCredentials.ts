@@ -1,5 +1,4 @@
 import request from 'request';
-// @ts-ignore
 import cheerio from 'cheerio';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import torRequest from '../utils/torRequest';
