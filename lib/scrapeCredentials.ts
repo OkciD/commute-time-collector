@@ -23,9 +23,7 @@ interface ConfigView {
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 /**
- * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку креды
- * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
- * @return {Promise<Credentials>}
+ * Ходим за html'ем Яндекс карт, выпаршиваем из него json с нужными токенами и созраняем куки
  */
 export default async function scrapeCredentials(): Promise<Credentials> {
 	const cookieJar: request.CookieJar = request.jar();
