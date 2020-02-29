@@ -8,15 +8,6 @@ import getRoutes from './lib/getRoutes';
 import recordRoutesData from './lib/recordRoutesData';
 import deleteEmpty from 'delete-empty';
 
-process.addListener('unhandledRejection', (reason?: {} | null | Error) => {
-	const error = (reason instanceof Error) ? reason.stack : reason;
-	logger.error('Unhandled rejection', { error });
-	// console.error(chalk.red('Unhandled rejection, reason: ', reason));
-
-	logger.end();
-	process.exit(1);
-});
-
 process.on('exit', () => {
 	// удаляем пустые папки логов wdio
 	deleteEmpty.sync(params.logsDir);
@@ -39,7 +30,7 @@ async function main(): Promise<void> {
 	logger.info('Successfully scraped credentials from the page');
 
 	const routes: FilteredAutoRoute[] = await getRoutes(startCoords, endCoords, credentials);
-	// logger.info('Successfully fetched routes data');
+	logger.info('Successfully fetched routes data');
 	//
 	// measuredSyncFn(recordRoutesData)(params.outDir, routes);
 	// logger.info('Routes data has been written to a file');
@@ -47,4 +38,10 @@ async function main(): Promise<void> {
 	logger.info('End');
 }
 
-measuredAsyncFn(main)();
+measuredAsyncFn(main)()
+	.catch((error?: {} | null | Error) => {
+		logger.error({ error });
+
+		logger.end();
+		process.exit(1);
+	});

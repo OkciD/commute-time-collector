@@ -39,13 +39,14 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 	const configView = $('script.config-view').get()[0];
 
 	if (!configView) {
-		throw new Error('todo: error 1');
+		throw new Error('Config-view script was not found');
 	}
 
 	const json = configView.children[0].data;
 
 	if (!json) {
-		throw new Error('todo: error 2');
+		localLogger.debug('No data in config-view script', { configView });
+		throw new Error('Can not find config-view json');
 	}
 
 	const parsedConfigView: ConfigView = JSON.parse(json);
@@ -56,7 +57,7 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		cookieJar,
 	};
 
-	console.log(result);
+	localLogger.debug('Returned value', { value: result });
 
 	return result;
 }
