@@ -5,6 +5,8 @@ import { measuredAsyncFn, measuredSyncFn } from './utils/performance';
 import { FilteredAutoRoute } from './types';
 import getRoutes from './lib/getRoutes';
 import recordRoutesData from './lib/recordRoutesData';
+import cron from 'node-cron';
+import context from './utils/context';
 
 async function main(): Promise<void> {
 	const { startCoords, endCoords } = params;
@@ -17,6 +19,7 @@ async function main(): Promise<void> {
 		);
 	}
 
+	context.init();
 	logger.info('Start', { params });
 
 	const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
@@ -31,10 +34,12 @@ async function main(): Promise<void> {
 	logger.info('End');
 }
 
-measuredAsyncFn(main)()
-	.catch((error?: {} | null | Error) => {
-		logger.error({ error });
+cron.schedule('* * * * *', () => {
+	measuredAsyncFn(main)()
+		.catch((error?: {} | null | Error) => {
+			logger.error({ error });
 
-		logger.end();
-		process.exit(1);
-	});
+			logger.end();
+			process.exit(1);
+		});
+});

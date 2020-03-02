@@ -1,17 +1,21 @@
 import fecha from 'fecha';
 
-export interface Context {
-	date: string;
-	time: string;
-	id: string;
+class Context {
+	public date: string = '';
+	public time: string = '';
+	public id: string = '';
+
+	constructor() {
+		this.init();
+	}
+
+	public init() {
+		const date: Date = new Date();
+
+		this.date = fecha.format(date, 'YYYY-MM-DD');
+		this.time = fecha.format(date, 'HH:mm:ss');
+		this.id = Math.random().toString(36).substr(2, 7);
+	}
 }
 
-const date: Date = new Date();
-
-const context: Context = {
-	date: fecha.format(date, 'YYYY-MM-DD'),
-	time: fecha.format(date, 'HH:mm:ss'),
-	id: Math.random().toString(36).substr(2, 7), // рандомный хеш
-};
-
-export default context;
+export default new Context();
