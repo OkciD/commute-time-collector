@@ -37,7 +37,7 @@ async function main(): Promise<void> {
 cron.schedule('* * * * *', () => {
 	measuredAsyncFn(main)()
 		.catch((error?: {} | null | Error) => {
-			logger.error({ error });
+			logger.error({ error: (error as Error).stack ?? error });
 
 			logger.end();
 			process.exit(1);
