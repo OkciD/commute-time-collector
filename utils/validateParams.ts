@@ -26,6 +26,7 @@ export default async function validateParams(kek: typeof params) {
 	);
 	localLogger.debug('cronExpression ok');
 
+	// проверяем доступность хоста и портов tor - все порты должны быть заняты
 	await Promise.all(torPorts.map((torPort: string) => {
 		localLogger.debug(`Checking access to ${torHost}:${torPort}`);
 
@@ -43,9 +44,11 @@ export default async function validateParams(kek: typeof params) {
 			});
 	}));
 
+	// проверяем доступ на запись в outDir
 	fs.accessSync(outDir, fs.constants.W_OK);
 	localLogger.debug('outDir is permitted to write');
 
+	// проверяем доступ на запись в logsDir
 	fs.accessSync(logsDir, fs.constants.W_OK);
 	localLogger.debug('logsDir is permitted to write');
 }
