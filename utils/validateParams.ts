@@ -6,12 +6,10 @@ import tcpPortUsed from 'tcp-port-used';
 export default async function validateParams(kek: typeof params) {
 	const { startCoords, endCoords, cronExpression, torPorts, torHost } = kek;
 
-	// проверяем, что startCoords и endCoords - числа (точнее строки с числами)
-	assert.notDeepStrictEqual(
-		[+startCoords, +endCoords],
-		[NaN, NaN],
-		'Params startCoords & endCoords are supposed to be numbers',
-	);
+	// todo: проверять формат startCoords и endCoords
+	[startCoords, endCoords].forEach((coords) => {
+		assert.notEqual(typeof coords, 'undefined', 'Params startCoords & endCoords are required');
+	});
 
 	// проверяем валидность cron-выражения встроенным в пакет node-cron валидатором
 	assert.ok(
