@@ -49,13 +49,15 @@ module.exports =  {
 				'allowForLoopAfterthoughts': true
 			}
 		],
-		"lines-between-class-members": [
-			"error",
-			"always",
+		'lines-between-class-members': [
+			'error',
+			'always',
 			{
 				exceptAfterSingleLine: true
 			}
-		]
+		],
+		'implicit-arrow-linebreak': 'off',
+		'function-paren-newline': 'off'
 	},
 	env: {
 		node: true

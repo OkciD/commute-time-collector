@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import path from 'path';
 
-interface Params extends minimist.ParsedArgs {
+interface RawParams extends minimist.ParsedArgs {
 	startCoords: string;
 	endCoords: string;
 
@@ -14,7 +14,7 @@ interface Params extends minimist.ParsedArgs {
 	cronExpression: string;
 }
 
-const parsedParams: Params = minimist<Params>(process.argv.slice(2), {
+const parsedParams: RawParams = minimist<RawParams>(process.argv.slice(2), {
 	default: {
 		logsDir: path.resolve('logs'),
 
