@@ -1,9 +1,8 @@
 import winston from 'winston';
-import params from './params';
 import path from 'path';
 import context from './context';
 
-const LOGS_DIR: string = params.logsDir;
+const LOGS_DIR: string = context.params.logsDir;
 const CURRENT_DATE_STR: string = context.date;
 const SESSION_ID: string = context.id;
 
