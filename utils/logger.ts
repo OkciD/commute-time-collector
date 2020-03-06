@@ -10,6 +10,10 @@ export type CustomizedLogger = winston.Logger & {
 	performance: winston.LeveledLogMethod
 };
 
+/**
+ * Кастомные уровни логирования. Потому что дефолтные меня не устроили
+ * @see https://github.com/winstonjs/winston#logging-levels
+ */
 const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	error: 0,
 	warn: 1,
@@ -18,6 +22,9 @@ const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	performance: 4,
 };
 
+/**
+ * Объект с цветами для каждого уровня логирования
+ */
 winston.addColors({
 	error: 'red',
 	warn: 'yellow',
@@ -26,6 +33,9 @@ winston.addColors({
 	performance: 'blue',
 });
 
+/**
+ * Логгер для продакшна. Пишет json-лог в файлик
+ */
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
 		sid: SESSION_ID,
@@ -45,6 +55,9 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	],
 }) as CustomizedLogger;
 
+/**
+ * Логгер для дева. Пишет раскрашенный лог в консоль
+ */
 const devLogger: CustomizedLogger = winston.createLogger({
 	levels: customLoggingLevels,
 	level: 'performance',
@@ -61,6 +74,9 @@ const devLogger: CustomizedLogger = winston.createLogger({
 
 const logger: CustomizedLogger = (process.env.NODE_ENV === 'dev') ? devLogger : prodLogger;
 
+/**
+ * Создаёт логгер для модуля, который пишет в лог его имя. Это должно помочь в отладке. Я надеюсь
+ */
 export function createLocalLogger(module: NodeJS.Module): CustomizedLogger {
 	return logger.child({
 		module: path.parse(module.filename).name,
