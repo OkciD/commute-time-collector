@@ -13,4 +13,10 @@ RUN npm ci --only=production
 
 COPY . .
 
-CMD [ "npm", "run", "start:prod", "--", "--waypoints=${WAYPOINTS}", "--cronExpression=${CRON_EXPRESSION}", "--torHost=${TOR_HOST}", "--torPorts=${TOR_PORTS}" ]
+CMD [ "npm", "run", "start:prod", "--",\
+	"--waypoints=${WAYPOINTS}",\
+	"--cronExpression=${CRON_EXPRESSION}",\
+	"--torHost=${TOR_HOST}",\
+	"--torPorts=${TOR_PORTS}",\
+	"--logsDir=/var/logs/commute-time-collector",\
+	"--outDir=/home/root/commute-time-collector"]
