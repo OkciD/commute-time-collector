@@ -38,12 +38,16 @@ class Context {
 	private static readonly CheckPortRetryInterval = 500;
 	private static readonly CheckPortTimeout = 3000;
 
+	constructor() {
+		this.reload();
+	}
+
 	public reload() {
 		const date = new Date();
 
 		this.date = fecha.format(date, 'YYYY-MM-DD');
 		this.time = fecha.format(date, 'HH:mm:ss');
-		this.id = Math.random().toString(36).substr(2, 7);
+		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
 	}
 
 	public importParams(argv: typeof process.argv): void {

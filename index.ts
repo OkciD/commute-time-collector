@@ -9,8 +9,6 @@ import context from './utils/context';
 
 async function main(): Promise<void> {
 	try {
-		context.reload();
-
 		logger.info('Start', { params: context.params });
 		const { startCoords, endCoords, outDir } = context.params;
 
@@ -36,6 +34,9 @@ if (context.isDev) {
 	measuredAsyncFn(main)();
 } else {
 	cron.schedule(context.params.cronExpression, () => {
-		measuredAsyncFn(main)();
+		measuredAsyncFn(main)()
+			.finally(() => {
+				context.reload();
+			});
 	});
 }
