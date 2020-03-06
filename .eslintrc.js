@@ -1,6 +1,11 @@
 module.exports =  {
 	parser:  '@typescript-eslint/parser',
-	extends: ['airbnb-typescript/base'],
+	plugins: [
+		'@typescript-eslint',
+	],
+	extends: [
+		'airbnb-typescript/base',
+	],
 	parserOptions:  {
 		ecmaVersion:  2019,
 		sourceType: 'module',
@@ -37,7 +42,22 @@ module.exports =  {
 			'after'
 		],
 		'import/extensions': 'off',
-		'import/no-unresolved': 'off'
+		'import/no-unresolved': 'off',
+		'no-plusplus': [
+			'error',
+			{
+				'allowForLoopAfterthoughts': true
+			}
+		],
+		'lines-between-class-members': [
+			'error',
+			'always',
+			{
+				exceptAfterSingleLine: true
+			}
+		],
+		'implicit-arrow-linebreak': 'off',
+		'function-paren-newline': 'off'
 	},
 	env: {
 		node: true

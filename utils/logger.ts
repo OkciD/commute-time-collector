@@ -1,35 +1,15 @@
 import winston from 'winston';
-import params from './params';
-import WebDriver from 'webdriver';
 import path from 'path';
-import fs from 'fs';
-import sessionData from './sessionData';
-
-const LOGS_DIR: string = params.logsDir;
-const CURRENT_DATE_STR: string = sessionData.date;
-const SESSION_ID: string = sessionData.id;
+import context from './context';
 
 export type CustomizedLogger = winston.Logger & {
 	performance: winston.LeveledLogMethod
 };
 
-export function getWdioLogConfig(): { logLevel: WebDriver.WebDriverLogTypes, outputDir?: string } {
-	const dirPath: string = path.join(LOGS_DIR, 'wdio', SESSION_ID);
-	const isSilent: boolean = params.wdioLogLevel === 'silent';
-
-	// wdio не умеет создавать себе папку для логов, если её нет, так что позаботимся о нём
-	if (!isSilent) {
-		fs.mkdirSync(dirPath, { recursive: true });
-	}
-
-	return {
-		logLevel: params.wdioLogLevel,
-		...(!isSilent) && {
-			outputDir: dirPath,
-		},
-	};
-}
-
+/**
+ * Кастомные уровни логирования. Потому что дефолтные меня не устроили
+ * @see https://github.com/winstonjs/winston#logging-levels
+ */
 const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	error: 0,
 	warn: 1,
@@ -38,6 +18,9 @@ const customLoggingLevels: winston.LoggerOptions['levels'] = {
 	performance: 4,
 };
 
+/**
+ * Объект с цветами для каждого уровня логирования
+ */
 winston.addColors({
 	error: 'red',
 	warn: 'yellow',
@@ -46,9 +29,12 @@ winston.addColors({
 	performance: 'blue',
 });
 
+/**
+ * Логгер для продакшна. Пишет json-лог в файлик
+ */
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
-		sid: SESSION_ID,
+		sid: context.id,
 	},
 	levels: customLoggingLevels,
 	level: 'performance',
@@ -59,12 +45,15 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.File({
-			dirname: LOGS_DIR,
-			filename: `${CURRENT_DATE_STR}.log`,
+			dirname: context.params.logsDir,
+			filename: `${context.date}.log`,
 		}),
 	],
 }) as CustomizedLogger;
 
+/**
+ * Логгер для дева. Пишет раскрашенный лог в консоль
+ */
 const devLogger: CustomizedLogger = winston.createLogger({
 	levels: customLoggingLevels,
 	level: 'performance',
@@ -79,8 +68,11 @@ const devLogger: CustomizedLogger = winston.createLogger({
 	],
 }) as CustomizedLogger;
 
-const logger: CustomizedLogger = (process.env.NODE_ENV === 'dev') ? devLogger : prodLogger;
+const logger: CustomizedLogger = (context.isDev) ? devLogger : prodLogger;
 
+/**
+ * Создаёт логгер для модуля, который пишет в лог его имя. Это должно помочь в отладке. Я надеюсь
+ */
 export function createLocalLogger(module: NodeJS.Module): CustomizedLogger {
 	return logger.child({
 		module: path.parse(module.filename).name,
