@@ -2,10 +2,6 @@ import winston from 'winston';
 import path from 'path';
 import context from './context';
 
-const LOGS_DIR: string = context.params.logsDir;
-const CURRENT_DATE_STR: string = context.date;
-const SESSION_ID: string = context.id;
-
 export type CustomizedLogger = winston.Logger & {
 	performance: winston.LeveledLogMethod
 };
@@ -38,7 +34,7 @@ winston.addColors({
  */
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
-		sid: SESSION_ID,
+		sid: context.id,
 	},
 	levels: customLoggingLevels,
 	level: 'performance',
@@ -49,8 +45,8 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.File({
-			dirname: LOGS_DIR,
-			filename: `${CURRENT_DATE_STR}.log`,
+			dirname: context.params.logsDir,
+			filename: `${context.date}.log`,
 		}),
 	],
 }) as CustomizedLogger;
