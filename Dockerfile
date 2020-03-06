@@ -1,9 +1,12 @@
 FROM node:12-alpine
 
-ENV WAYPOINTS ""
+ENV WAYPOINTS       ""
 ENV CRON_EXPRESSION ""
-ENV TOR_HOST ""
-ENV TOR_PORTS 9050
+ENV TOR_HOST        ""
+ENV TOR_PORTS       9050
+
+ARG LOGS_DIR="/var/logs/commute-time-collector"
+ARG OUT_DIR="/home/root/commute-time-collector"
 
 USER root
 WORKDIR /usr/src/app
@@ -18,5 +21,5 @@ CMD [ "npm", "run", "start:prod", "--",\
 	"--cronExpression=${CRON_EXPRESSION}",\
 	"--torHost=${TOR_HOST}",\
 	"--torPorts=${TOR_PORTS}",\
-	"--logsDir=/var/logs/commute-time-collector",\
-	"--outDir=/home/root/commute-time-collector"]
+	"--logsDir=$LOGS_DIR",\
+	"--outDir=$OUT_DIR"]
