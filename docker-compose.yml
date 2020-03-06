@@ -1,0 +1,13 @@
+version: '3'
+services:
+  app:
+    build: .
+    environment:
+      - TOR_HOST=tor
+      - TOR_PORTS=9050,9052,9053,9054
+      - WAYPOINTS
+      - CRON_EXPRESSION
+  tor:
+    image: "osminogin/tor-simple:latest"
+    volumes:
+      - ./torrc:/etc/tor/torrc:ro
