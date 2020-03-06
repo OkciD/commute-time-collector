@@ -26,6 +26,7 @@ class Context {
 	public date: string = '';
 	public time: string = '';
 	public id: string = '';
+	public isDev: boolean = process.env.NODE_ENV === 'dev';
 	public params: Params = {
 		logsDir: path.resolve('logs'),
 		outDir: path.resolve('out'),

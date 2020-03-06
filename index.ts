@@ -32,7 +32,7 @@ async function main(): Promise<void> {
 	}
 }
 
-if (process.env.NODE_ENV === 'dev') {
+if (context.isDev) {
 	measuredAsyncFn(main)();
 } else {
 	cron.schedule(context.params.cronExpression, () => {

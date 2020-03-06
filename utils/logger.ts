@@ -68,7 +68,7 @@ const devLogger: CustomizedLogger = winston.createLogger({
 	],
 }) as CustomizedLogger;
 
-const logger: CustomizedLogger = (process.env.NODE_ENV === 'dev') ? devLogger : prodLogger;
+const logger: CustomizedLogger = (context.isDev) ? devLogger : prodLogger;
 
 /**
  * Создаёт логгер для модуля, который пишет в лог его имя. Это должно помочь в отладке. Я надеюсь
