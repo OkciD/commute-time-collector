@@ -25,13 +25,17 @@ async function main(): Promise<void> {
 	} catch (error) {
 		logger.error(error ?? 'Unknown error');
 
-		logger.end();
-		process.exit(1);
+		throw error;
 	}
 }
 
 if (context.isDev) {
-	measuredAsyncFn(main)();
+	measuredAsyncFn(main)()
+		.catch(() => {
+			logger.end(() => {
+				process.exit(1);
+			});
+		});
 } else {
 	cron.schedule(context.params.cronExpression, () => {
 		measuredAsyncFn(main)()
