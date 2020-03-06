@@ -9,6 +9,7 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
 
 /**
  * Генератор, возвращающий бесконечный циклический итератор по переданному итерируемому объекту
+ * [1, 2, 3] => 1, 2, 3, 1, 2, 3, ...
  */
 function* endlessGenerator<T = any>(iterableObject: Iterable<T>) {
 	while (true) {
@@ -18,7 +19,7 @@ function* endlessGenerator<T = any>(iterableObject: Iterable<T>) {
 
 const torPortsIterator = endlessGenerator(context.params.torPorts);
 
-// начинаем со случайного порта, "прокручивая" итератор от 0 до torPorts.length
+// начинаем со случайного порта, "прокручивая" итератор на величину от 0 до torPorts.length
 const initialPortIndex = Math.floor(Math.random() * (context.params.torPorts.length + 1));
 for (let i = 0; i < initialPortIndex; i++) {
 	torPortsIterator.next();
