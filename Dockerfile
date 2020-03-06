@@ -1,7 +1,6 @@
 FROM node:12-alpine
 
-ENV START_COORDS ""
-ENV END_COORDS ""
+ENV WAYPOINTS ""
 ENV CRON_EXPRESSION ""
 ENV TOR_HOST ""
 ENV TOR_PORTS 9050
@@ -14,4 +13,4 @@ RUN npm ci --only=production
 
 COPY . .
 
-CMD [ "npm", "run", "start:prod", "--", "--startCoords=${START_COORDS}", "--endCoords=${END_COORDS}", "--cronExpression=${CRON_EXPRESSION}", "--torHost=${TOR_HOST}", "--torPorts=${TOR_PORTS}" ]
+CMD [ "npm", "run", "start:prod", "--", "--waypoints=${WAYPOINTS}", "--cronExpression=${CRON_EXPRESSION}", "--torHost=${TOR_HOST}", "--torPorts=${TOR_PORTS}" ]

@@ -7,8 +7,7 @@ import request from 'request';
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 export default async function getRoutes(
-	startCoords: string,
-	endCoords: string,
+	waypoints: [string, string][],
 	credentials: Credentials,
 ): Promise<FilteredAutoRoute[]> {
 	const { csrfToken, sessionId, cookieJar } = credentials;
@@ -25,7 +24,7 @@ export default async function getRoutes(
 			mode: 'best',
 			regionId: '213', // id Москвы (вроде бы необязательный параметр)
 			results: '6',
-			rll: `${startCoords}~${endCoords}`,
+			rll: waypoints.map(([latitude, longitude]) => `${longitude},${latitude}`).join('~'),
 			sessionId,
 			type: 'auto',
 		},
