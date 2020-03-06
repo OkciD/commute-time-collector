@@ -2,6 +2,7 @@ import request from 'request';
 import cheerio from 'cheerio';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import torRequest from '../utils/torRequest';
+import http from 'http';
 
 export interface Credentials {
 	csrfToken: string;
@@ -30,6 +31,16 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 	const response: request.Response = await torRequest({
 		url: 'https://yandex.ru/maps/',
 		jar: cookieJar,
+		followRedirect: ({ statusCode, statusMessage, headers, url }: http.IncomingMessage) => {
+			localLogger.debug('Redirect occurred', {
+				originalUrl: url,
+				statusCode,
+				statusMessage,
+				location: headers.location,
+			});
+
+			return false;
+		},
 	});
 
 	const $ = cheerio.load(response.body);
