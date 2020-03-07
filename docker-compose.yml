@@ -7,7 +7,13 @@ services:
       - TOR_PORTS=9050,9052,9053,9054
       - WAYPOINTS
       - CRON_EXPRESSION
+    volumes:
+      - logs-volume:/var/log/commute-time-collector
+      - out-volume:/root/commute-time-collector
   tor:
-    image: "osminogin/tor-simple:latest"
+    image: 'osminogin/tor-simple:latest'
     volumes:
       - ./torrc:/etc/tor/torrc:ro
+volumes:
+  logs-volume:
+  out-volume:
