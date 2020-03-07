@@ -4,6 +4,8 @@ import { Merge } from 'type-fest';
 import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
+import packageJson from '../package.json';
+import os from 'os';
 
 interface RawParams {
 	waypoints: string;
@@ -30,8 +32,12 @@ class Context {
 	public params: Params = {
 		waypoints: [],
 
-		logsDir: path.resolve('logs'),
-		outDir: path.resolve('out'),
+		logsDir: this.isDev ?
+			path.resolve('logs') :
+			path.resolve('/', 'var', 'log', packageJson.name),
+		outDir: this.isDev ?
+			path.resolve('out') :
+			path.resolve(os.homedir(), packageJson.name),
 
 		torHost: '127.0.0.1',
 		torPorts: ['9050'],
@@ -57,6 +63,8 @@ class Context {
 		const params = {
 			...this.params,
 			...rawParams,
+			...(rawParams.outDir) && { outDir: path.resolve(rawParams.outDir) },
+			...(rawParams.logsDir) && { logsDir: path.resolve(rawParams.logsDir) },
 			torPorts: rawParams.torPorts.split(','),
 			waypoints: rawParams.waypoints.split('->')
 				.map((coordsPair: string) => coordsPair.split(',').slice(0, 2) as [string, string]),
