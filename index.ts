@@ -39,6 +39,9 @@ if (context.isDev) {
 } else {
 	cron.schedule(context.params.cronExpression, () => {
 		measuredAsyncFn(main)()
+			.catch((error) => {
+				console.error(error);
+			})
 			.finally(() => {
 				context.reload();
 			});
