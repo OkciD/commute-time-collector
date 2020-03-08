@@ -11,9 +11,20 @@ services:
       - logs-volume:/var/log/commute-time-collector
       - out-volume:/root/commute-time-collector
   tor:
-    image: 'osminogin/tor-simple:latest'
+    image: osminogin/tor-simple:latest
     volumes:
       - ./torrc:/etc/tor/torrc:ro
 volumes:
   logs-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/y.baykov/commute-time-collector/logs
+
   out-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /Users/y.baykov/commute-time-collector/out
