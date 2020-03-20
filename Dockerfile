@@ -12,6 +12,12 @@ VOLUME $LOGS_DIR
 VOLUME $OUT_DIR
 
 USER root
+
+RUN apk add logrotate
+
+WORKDIR /etc/logrotate.d
+COPY ./logrotate.conf ./commute-time-collector
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./
@@ -19,10 +25,4 @@ RUN npm ci --only=production
 
 COPY . .
 
-CMD [ "npm", "run", "start:prod", "--",\
-	"--waypoints=${WAYPOINTS}",\
-	"--cronExpression=${CRON_EXPRESSION}",\
-	"--torHost=${TOR_HOST}",\
-	"--torPorts=${TOR_PORTS}", \
-	"--logsDir=${LOGS_DIR}", \
-	"--outDir=${OUT_DIR}"]
+CMD ./docker-entry.sh
