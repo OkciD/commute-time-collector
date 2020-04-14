@@ -39,7 +39,37 @@
         SocksPort 9054
         ```
        Обратите внимание, порт `9051` мы не трогаем - он нужен Tor для других чёрных делишек
-    3. Перезапускам Tor
+    3. Перезапускаем Tor
         ```shell script
         sudo /etc/init.d/tor restart
         ```
+
+### Сам сервис
+
+#### Docker
+1. Переходим в текущую папку
+2. Собираем контейнер
+    ```shell script
+    docker build -t okcid/commute-time-collector ./
+    ```
+3. Запускаем
+    ```shell script
+    docker run -d \
+      --name=commute-time-collector \
+      -e "WAYPOINTS=55.751347,37.618731->55.754930,37.573071" \
+      -e "CRON_EXPRESSION=* * * * *" \
+      -e "TOR_HOST=127.0.0.1" \
+      -e "TOR_PORTS=9050,9052,9053,9054" \
+      --volume $HOME/commute-time-collector/logs:/var/log/commute-time-collector \
+      --volume $HOME/commute-time-collector/out:/root/commute-time-collector \
+      okcid/commute-time-collector
+    ```
+
+    Параметры:
+    * **WAYPOINTS** &ndash; координаты точки, через которые нужно строить маршрут (разделены символом `->`)
+    * **CRON_EXPRESSION** &ndash; cron-выражение, по которому будет запускаться сбор данных
+    * **TOR_HOST** &ndash; хост, на котором запущен Tor
+    * **TOR_PORTS** &ndash; список открытых SOCKS-портов Tor через запятую
+    * **$HOME/commute-time-collector/logs** &ndash; директория, куда складывать логи.
+    Строку с этим параметром можно пропустить &ndash; тогда логи останутся внутри контейнера
+    * **$HOME/commute-time-collector/out** &ndash; директория, в которую будут собираться CSV файлы с результатами
