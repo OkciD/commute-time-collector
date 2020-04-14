@@ -1,3 +1,4 @@
+#todo: генерилка docker-compose
 version: '3'
 services:
   app:
