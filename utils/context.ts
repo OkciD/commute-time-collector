@@ -5,9 +5,8 @@ import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
 
-interface RawParams extends minimist.ParsedArgs {
-	startCoords: string;
-	endCoords: string;
+interface RawParams {
+	waypoints: string;
 
 	logsDir: string;
 	outDir: string;
@@ -18,7 +17,10 @@ interface RawParams extends minimist.ParsedArgs {
 	cronExpression: string;
 }
 
-type Params = Merge<RawParams, { torPorts: string[] }>;
+type Params = Merge<RawParams, {
+	waypoints: [string, string][],
+	torPorts: string[]
+}>;
 
 class Context {
 	public date: string = '';
@@ -26,15 +28,16 @@ class Context {
 	public id: string = '';
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
 	public params: Params = {
+		waypoints: [],
+
 		logsDir: path.resolve('logs'),
 		outDir: path.resolve('out'),
 
 		torHost: '127.0.0.1',
 		torPorts: ['9050'],
-	};
 
-	private static readonly CheckPortRetryInterval = 500;
-	private static readonly CheckPortTimeout = 3000;
+		cronExpression: '',
+	};
 
 	constructor() {
 		this.reload();
@@ -54,7 +57,11 @@ class Context {
 		const params = {
 			...this.params,
 			...rawParams,
+			...(rawParams.outDir) && { outDir: path.resolve(rawParams.outDir) },
+			...(rawParams.logsDir) && { logsDir: path.resolve(rawParams.logsDir) },
 			torPorts: rawParams.torPorts.split(','),
+			waypoints: rawParams.waypoints.split('->')
+				.map((coordsPair: string) => coordsPair.split(',').slice(0, 2) as [string, string]),
 		};
 
 		Context.validateParams(params);
@@ -62,12 +69,10 @@ class Context {
 	}
 
 	private static validateParams(params: Params): void {
-		const { startCoords, endCoords, cronExpression } = params;
+		const { waypoints, cronExpression } = params;
 
-		// todo: проверять формат startCoords и endCoords
-		[startCoords, endCoords].forEach((coords) => {
-			assert.notEqual(typeof coords, 'undefined', 'Params startCoords & endCoords are required');
-		});
+		// todo: проверять формат waypoints
+		assert.notEqual(typeof waypoints, 'undefined', 'Params startCoords & endCoords are required');
 
 		// проверяем валидность cron-выражения встроенным в пакет node-cron валидатором
 		assert.ok(

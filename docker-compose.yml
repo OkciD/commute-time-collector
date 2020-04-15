@@ -1,0 +1,31 @@
+#todo: генерилка docker-compose
+version: '3'
+services:
+  app:
+    build: .
+    environment:
+      - TOR_HOST=tor
+      - TOR_PORTS=9050,9052,9053,9054
+      - WAYPOINTS
+      - CRON_EXPRESSION
+    volumes:
+      - logs:/var/log/commute-time-collector
+      - out:/root/commute-time-collector
+  tor:
+    image: osminogin/tor-simple:latest
+    volumes:
+      - ./torrc:/etc/tor/torrc:ro
+volumes:
+  logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LOGS_VOLUME}
+
+  out:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${OUT_VOLUME}

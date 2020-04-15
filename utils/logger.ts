@@ -35,6 +35,7 @@ winston.addColors({
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
 		sid: context.id,
+		date: context.date,
 	},
 	levels: customLoggingLevels,
 	level: 'performance',
@@ -46,7 +47,7 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	transports: [
 		new winston.transports.File({
 			dirname: context.params.logsDir,
-			filename: `${context.date}.log`,
+			filename: 'commute-time-collector.log',
 		}),
 	],
 }) as CustomizedLogger;

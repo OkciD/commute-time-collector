@@ -31,9 +31,8 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 	const response: request.Response = await torRequest({
 		url: 'https://yandex.ru/maps/',
 		jar: cookieJar,
-		followRedirect: ({ statusCode, statusMessage, headers, url }: http.IncomingMessage) => {
+		followRedirect: ({ statusCode, statusMessage, headers }: http.IncomingMessage) => {
 			localLogger.debug('Redirect occurred', {
-				originalUrl: url,
 				statusCode,
 				statusMessage,
 				location: headers.location,
