@@ -2,7 +2,7 @@
 
 crond # запускаем cron, чтобы заработал установленный в контейнере logrotate
 
-npm run start:prod -- \
+npm start -- \
 	--waypoints="$WAYPOINTS" \
 	--cronExpression="$CRON_EXPRESSION" \
 	--torHost="$TOR_HOST" \
