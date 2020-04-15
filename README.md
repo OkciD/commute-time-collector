@@ -73,3 +73,20 @@
     * **$HOME/commute-time-collector/logs** &ndash; директория, куда складывать логи.
     Строку с этим параметром можно пропустить &ndash; тогда логи останутся внутри контейнера
     * **$HOME/commute-time-collector/out** &ndash; директория, в которую будут собираться CSV файлы с результатами
+    
+#### Ручками
+1. Переходим в текущую папку
+2. Устанавливаем зависимости
+    ```shell script
+    npm ci --only=production
+    ```
+3. Запускаем ~~гуся~~
+    ```shell script
+    npm start -- \
+      --waypoints="55.751347,37.618731->55.754930,37.573071" \
+      --cronExpression="* * * * *" \
+      --torHost="127.0.0.1" \
+      --torPorts="9050,9052,9053,9054" \
+      --logsDir="$HOME/commute-time-collector/logs" \
+      --outDir="$HOME/commute-time-collector/out"
+    ```
