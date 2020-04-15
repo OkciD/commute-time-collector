@@ -9,6 +9,8 @@ module.exports =  {
 	parserOptions:  {
 		ecmaVersion:  2019,
 		sourceType: 'module',
+		project: './tsconfig.json',
+		tsconfigRootDir: __dirname,
 	},
 	rules:  {
 		// Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
