@@ -4,6 +4,7 @@ import { Merge } from 'type-fest';
 import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
+import UserAgent from 'user-agents';
 
 interface RawParams {
 	waypoints: string;
@@ -26,6 +27,7 @@ class Context {
 	public date: string = '';
 	public time: string = '';
 	public id: string = '';
+	public userAgent: string = new UserAgent().toString();
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
 	public params: Params = {
 		waypoints: [],

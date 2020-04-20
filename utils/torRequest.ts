@@ -41,6 +41,10 @@ export default async function torRequest(requestOptions: request.OptionsWithUrl)
 
 	const response: request.Response = await promisifiedTorRequest({
 		...requestOptions,
+		headers: {
+			'user-agent': context.userAgent,
+			...requestOptions.headers,
+		},
 		time: true,
 	});
 	const { statusCode, timingPhases, body } = response;
