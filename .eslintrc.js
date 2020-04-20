@@ -59,7 +59,8 @@ module.exports =  {
 			}
 		],
 		'implicit-arrow-linebreak': 'off',
-		'function-paren-newline': 'off'
+		'function-paren-newline': 'off',
+		'@typescript-eslint/no-throw-literal': 'off',
 	},
 	env: {
 		node: true
