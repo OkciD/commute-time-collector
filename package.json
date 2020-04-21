@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "A service that collects time to get from point A to point B via Yandex maps",
   "scripts": {
-    "start": "ts-node ./index.ts",
-    "start:dev": "NODE_ENV=dev ts-node ./index.ts",
+    "start": "ts-node src/index.ts",
+    "start:dev": "NODE_ENV=dev ts-node src/index.ts",
     "tsc": "tsc",
     "lint": "eslint --ext .tsx --ext .ts --format codeframe './'",
     "lint:fix": "eslint --debug --fix"
