@@ -6,6 +6,12 @@ import assert from 'assert';
 import cron from 'node-cron';
 import UserAgent from 'user-agents';
 
+const FLOAT = '\\d+(\\.\\d+)?';
+const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
+const WAYPOINTS_REGEXP = new RegExp(`${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+`);
+
+const TOR_PORTS_REGEXP = /^\d+(,\d+)+$/;
+
 interface RawParams {
 	waypoints: string;
 
@@ -56,31 +62,44 @@ class Context {
 	public importParams(argv: typeof process.argv): void {
 		const rawParams = minimist<RawParams>(argv);
 
-		const params = {
+		Context.validateParams(rawParams);
+
+		this.params = {
 			...this.params,
 			...rawParams,
 			...(rawParams.outDir) && { outDir: path.resolve(rawParams.outDir) },
 			...(rawParams.logsDir) && { logsDir: path.resolve(rawParams.logsDir) },
 			torPorts: rawParams.torPorts.split(','),
 			waypoints: rawParams.waypoints.split('->')
-				.map((coordsPair: string) => coordsPair.split(',').slice(0, 2) as [string, string]),
+				.map((coordsPair: string) => coordsPair.split(',') as [string, string]),
 		};
-
-		Context.validateParams(params);
-		this.params = params;
 	}
 
-	private static validateParams(params: Params): void {
-		const { waypoints, cronExpression } = params;
+	private static validateParams(params: RawParams): void {
+		const { waypoints, cronExpression, torPorts } = params;
 
-		// todo: проверять формат waypoints
-		assert.notEqual(typeof waypoints, 'undefined', 'Params startCoords & endCoords are required');
+		// проверяем наличие параметра waypoints
+		assert.notEqual(typeof waypoints, 'undefined', 'Param "waypoints" is required');
+		// проверяем формат параметра waypoints
+		assert.ok(
+			WAYPOINTS_REGEXP.test(waypoints),
+			'Invalid "waypoints" param. It should be <float>,<float>-><float>,<float>[-><float>,<float>] ' +
+			'(e.g. 55.751347,37.618731->55.754930,37.573071)',
+		);
 
 		// проверяем валидность cron-выражения встроенным в пакет node-cron валидатором
 		assert.ok(
 			cron.validate(cronExpression),
-			'Invalid cronExpression param. See: https://github.com/node-cron/node-cron',
+			'Invalid "cronExpression" param. See: https://github.com/node-cron/node-cron#cron-syntax',
 		);
+
+		// проверяем строку с портами для Tor
+		assert.ok(
+			TOR_PORTS_REGEXP.test(torPorts),
+			'Invalid "torPorts" param. It should be <int>[,int] (e.g. 9050 or 9050,9052,9053)',
+		);
+
+		// todo: validate logsDir & outDir
 	}
 }
 
