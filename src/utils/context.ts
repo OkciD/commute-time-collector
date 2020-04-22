@@ -33,8 +33,13 @@ class Context {
 	public date: string = '';
 	public time: string = '';
 	public id: string = '';
-	public userAgent: string = new UserAgent().toString();
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
+
+	public userAgent: string = new UserAgent({
+		vendor: 'Google Inc.',
+		deviceCategory: 'desktop',
+	}).toString();
+
 	public params: Params = {
 		waypoints: [],
 
