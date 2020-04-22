@@ -6,20 +6,6 @@ import fs from 'fs';
 import path from 'path';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 
-interface CsvRowObject {
-	'sessionData.id': string;
-	'sessionData.date': string;
-	'sessionData.time': string;
-	'uuid': string;
-	'distance': number;
-	'duration': number;
-	'durationInTraffic': number;
-	'flags.blocked': boolean;
-	'flags.hasTolls': boolean;
-	'flags.futureBlocked': boolean;
-	'flags.deadJam': boolean;
-}
-
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
 export default function recordRoutesData(outDir: string, routes: FilteredAutoRoute[]) {
@@ -29,8 +15,8 @@ export default function recordRoutesData(outDir: string, routes: FilteredAutoRou
 
 	localLogger.debug(`Output file ${outFileAlreadyExists ? 'already exists' : 'doesn\'t exist'}`, { outFilePath });
 
-	const csvRowsObjects: CsvRowObject[] = routes.map((route) => ({
-		...flat.flatten(route),
+	const csvRowsObjects = routes.map((route) => flat.flatten({
+		...route,
 		sessionData: context,
 	}));
 
@@ -48,7 +34,7 @@ export default function recordRoutesData(outDir: string, routes: FilteredAutoRou
 			'flags.hasTolls',
 			'flags.futureBlocked',
 			'flags.deadJam',
-		] as (keyof CsvRowObject)[],
+		],
 		cast: {
 			boolean: (value: boolean) => JSON.stringify(value),
 		},
