@@ -35,12 +35,11 @@ winston.addColors({
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
 		sid: context.id,
-		date: context.date,
+		time: context.dateTime,
 	},
 	levels: customLoggingLevels,
 	level: 'performance',
 	format: winston.format.combine(
-		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.errors({ stack: true }),
 		winston.format.json(),
 	),
@@ -56,10 +55,13 @@ const prodLogger: CustomizedLogger = winston.createLogger({
  * Логгер для дева. Пишет раскрашенный лог в консоль
  */
 const devLogger: CustomizedLogger = winston.createLogger({
+	defaultMeta: {
+		sid: context.id,
+		time: context.dateTime,
+	},
 	levels: customLoggingLevels,
 	level: 'performance',
 	format: winston.format.combine(
-		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.colorize({ all: true }),
 		winston.format.errors({ stack: true }),
 		winston.format.simple(),

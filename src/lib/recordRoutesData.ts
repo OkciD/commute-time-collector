@@ -24,8 +24,7 @@ export default function recordRoutesData(outDir: string, routes: FilteredAutoRou
 		header: shouldGenerateHeader,
 		columns: [
 			'sessionData.id',
-			'sessionData.date',
-			'sessionData.time',
+			'sessionData.dateTime',
 			'uuid',
 			'distance',
 			'duration',

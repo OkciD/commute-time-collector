@@ -31,7 +31,7 @@ type Params = Merge<RawParams, {
 
 class Context {
 	public date: string = '';
-	public time: string = '';
+	public dateTime: string = '';
 	public id: string = '';
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
 
@@ -59,8 +59,8 @@ class Context {
 	public reload() {
 		const date = new Date();
 
-		this.date = fecha.format(date, 'YYYY-MM-DD');
-		this.time = fecha.format(date, 'HH:mm:ss');
+		this.date = fecha.format(date, 'isoDate');
+		this.dateTime = fecha.format(date, 'isoDateTime');
 		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
 	}
 
