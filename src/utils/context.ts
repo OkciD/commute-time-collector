@@ -8,7 +8,7 @@ import UserAgent from 'user-agents';
 
 const FLOAT = '\\d+(\\.\\d+)?';
 const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
-const WAYPOINTS_REGEXP = new RegExp(`${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+`);
+const WAYPOINTS_REGEXP = new RegExp(`^${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+$`);
 
 const TOR_PORTS_REGEXP = /^\d+(,\d+)+$/;
 
