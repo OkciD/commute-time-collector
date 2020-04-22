@@ -1,13 +1,15 @@
-import request from 'request';
-import cheerio from 'cheerio';
+// import request from 'request';
+// import cheerio from 'cheerio';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
-import torRequest from '../utils/torRequest';
-import http from 'http';
+// import torRequest from '../utils/torRequest';
+import * as WebdriverIO from 'webdriverio';
+import context from '../utils/context';
+import * as Webdriver from 'webdriver';
 
 export interface Credentials {
 	csrfToken: string;
 	sessionId: string;
-	cookieJar: request.CookieJar
+	cookies: Webdriver.Cookie[];
 }
 
 // укороченный тайпинг для зашитого в html'е json'а с полезными данными
@@ -22,49 +24,93 @@ interface ConfigView {
 
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
+const YANDEX_MAPS_URL = 'https://yandex.ru/maps';
+
 /**
- * Ходим за html'ем Яндекс карт, выпаршиваем из него json с нужными токенами и созраняем куки
+ * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку креды
+ * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
  */
 export default async function scrapeCredentials(): Promise<Credentials> {
-	const cookieJar: request.CookieJar = request.jar();
+	// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
+	let browser: WebdriverIO.BrowserObject | null = null;
 
-	const response: request.Response = await torRequest({
-		url: 'https://yandex.ru/maps/',
-		jar: cookieJar,
-		followRedirect: ({ statusCode, statusMessage, headers }: http.IncomingMessage) => {
-			localLogger.debug('Redirect occurred', {
-				statusCode,
-				statusMessage,
-				location: headers.location,
-			});
+	try {
+		// запускаем и настраиваем wdio
+		browser = await WebdriverIO.remote({
+			hostname: '127.0.0.1',
+			port: 4444,
+			path: '/wd/hub',
+			capabilities: {
+				browserName: 'chrome',
+				'goog:chromeOptions': {
+					args: [
+						'--headless',
+						'--disable-gpu',
+						'--proxy-server=socks5://tor:9050',
+					],
+				},
+			},
+			logLevel: 'silent',
+		});
+		localLogger.debug('Initialized WDIO');
 
-			return false;
-		},
-	});
+		// заходим на страницу Яндекс карт
+		localLogger.debug('Navigating to Yandex maps page', { url: YANDEX_MAPS_URL });
+		await browser.url(YANDEX_MAPS_URL);
 
-	const $ = cheerio.load(response.body);
-	const configView = $('script.config-view').get()[0];
+		const actualUrl: string = await browser.getUrl();
 
-	if (!configView) {
-		throw new Error('Config-view script was not found');
+		if (actualUrl.startsWith(YANDEX_MAPS_URL)) {
+			localLogger.debug('Navigation successful', { url: actualUrl });
+		} else {
+			// todo: error with actual url
+			throw new Error(`Redirect happened ${actualUrl}`);
+		}
+
+		await browser.$('script.config-view')
+			.then((element) => element.waitForExist({ timeout: 30000 }));
+
+		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
+		const configViewJson: string | undefined = await browser.execute(() => {
+			const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
+
+			return scriptElement?.innerText;
+		});
+
+		if (typeof configViewJson === 'undefined' || configViewJson === null) {
+			// todo: custom error
+			console.log('#'.repeat(10));
+			console.log(configViewJson);
+			console.log(typeof configViewJson);
+			console.log('#'.repeat(10));
+			throw new Error('Unable to find config on the page');
+		}
+
+		localLogger.debug('Config script has been found', { valueSlice: `${configViewJson.slice(0, 50)}...` });
+
+		const configView: ConfigView = JSON.parse(configViewJson);
+		localLogger.debug('Page config parsed successfully');
+
+		// достаём все куки
+		const cookies: WebDriver.Cookie[] = await browser.getCookies();
+		localLogger.debug('Cookies', { value: cookies });
+
+		const result: Credentials = {
+			csrfToken: configView.csrfToken,
+			sessionId: configView.counters.analytics.sessionId,
+			cookies,
+		};
+		localLogger.debug('Returned value', { value: result });
+
+		return result;
+	} finally {
+		localLogger.debug('Got into the "finally" section');
+
+		if (browser) {
+			await browser.deleteSession();
+			localLogger.debug('Deleted browser session');
+		} else {
+			localLogger.debug('Browser object doesnt exist', { typeofBrowserObject: typeof browser });
+		}
 	}
-
-	const json = configView.children[0].data;
-
-	if (!json) {
-		localLogger.debug('No data in config-view script', { configView });
-		throw new Error('Can not find config-view json');
-	}
-
-	const parsedConfigView: ConfigView = JSON.parse(json);
-
-	const result: Credentials = {
-		csrfToken: parsedConfigView.csrfToken,
-		sessionId: parsedConfigView.counters.analytics.sessionId,
-		cookieJar,
-	};
-
-	localLogger.debug('Returned value', { value: result });
-
-	return result;
 }
