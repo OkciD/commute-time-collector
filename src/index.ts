@@ -6,15 +6,11 @@ import getRoutes from './lib/getRoutes';
 import recordRoutesData from './lib/recordRoutesData';
 import cron from 'node-cron';
 import context from './utils/context';
-import getPublicIp from './utils/getIp';
 
 async function main(): Promise<void> {
 	try {
 		logger.info('Start', { params: context.params });
 		const { waypoints, outDir } = context.params;
-
-		const publicIp: string = await getPublicIp();
-		logger.info('Obtained public IP', { publicIp });
 
 		const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
 		logger.info('Successfully scraped credentials from the page');
