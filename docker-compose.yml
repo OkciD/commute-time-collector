@@ -10,7 +10,7 @@ services:
       - "127.0.0.1:9050:9050"
       - "127.0.0.1:9052-9054:9052-9054"
 
-  selenium-chrome:
+  selenium:
     image: selenium/standalone-chrome
     volumes:
       - /dev/shm:/dev/shm
