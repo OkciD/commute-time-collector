@@ -1,4 +1,4 @@
-import scrapeCredentials, { Credentials } from './lib/scrapeCredentials';
+import scrapePageData, { PageData } from './lib/scrapePageData';
 import logger from './utils/logger';
 import { measuredAsyncFn, measuredSyncFn } from './utils/performance';
 import { FilteredAutoRoute } from './types';
@@ -12,8 +12,8 @@ async function main(): Promise<void> {
 		logger.info('Start', { params: context.params });
 		const { waypoints, outDir } = context.params;
 
-		const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
-		logger.info('Successfully scraped credentials from the page');
+		const credentials: PageData = await measuredAsyncFn(scrapePageData)();
+		logger.info('Successfully scraped data from the page');
 
 		// const routes: FilteredAutoRoute[] = await getRoutes(waypoints, credentials);
 		// logger.info('Successfully fetched routes data');

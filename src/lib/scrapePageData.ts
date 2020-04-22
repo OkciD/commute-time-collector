@@ -1,9 +1,8 @@
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import * as WebdriverIO from 'webdriverio';
-import context from '../utils/context';
 import * as Webdriver from 'webdriver';
 
-export interface Credentials {
+export interface PageData {
 	csrfToken: string;
 	sessionId: string;
 	cookies: Webdriver.Cookie[];
@@ -25,10 +24,10 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
 const YANDEX_MAPS_URL = 'https://yandex.ru/maps';
 
 /**
- * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку креды
+ * Заходим на страницу Яндекс карт webdriver'ом и webscrape'им из неё нужные для запроса в апишку данные
  * Заходим webdriver'ом потому, что Яндекс банит запросы за html'ем карт не из браузера
  */
-export default async function scrapeCredentials(): Promise<Credentials> {
+export default async function scrapePageData(): Promise<PageData> {
 	// вытаскиваем объект browser наверх, чтобы получить к нему доступ из секции finally
 	let browser: WebdriverIO.BrowserObject | null = null;
 
@@ -75,7 +74,6 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		if (typeof configViewJson === 'undefined' || configViewJson === null) {
 			throw new Error('Unable to find config on the page');
 		}
-
 		localLogger.debug('Config script has been found', { valueSlice: `${configViewJson.slice(0, 50)}...` });
 
 		const configView: ConfigView = JSON.parse(configViewJson);
@@ -89,7 +87,7 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		const userAgent = await browser.execute(() => navigator.userAgent);
 		localLogger.debug('Got User-Agent', { userAgent });
 
-		const result: Credentials = {
+		const result: PageData = {
 			csrfToken: configView.csrfToken,
 			sessionId: configView.counters.analytics.sessionId,
 			cookies,

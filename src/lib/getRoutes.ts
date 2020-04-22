@@ -1,4 +1,4 @@
-import { Credentials } from './scrapeCredentials';
+import { PageData } from './scrapePageData';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from '../types';
 import torRequest from '../utils/torRequest';
@@ -8,7 +8,7 @@ const localLogger: CustomizedLogger = createLocalLogger(module);
 
 export default async function getRoutes(
 	waypoints: [string, string][],
-	credentials: Credentials,
+	credentials: PageData,
 ): Promise<FilteredAutoRoute[]> {
 	const { csrfToken, sessionId, cookieJar } = credentials;
 
