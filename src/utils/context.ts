@@ -4,7 +4,6 @@ import { Merge } from 'type-fest';
 import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
-import UserAgent from 'user-agents';
 
 const FLOAT = '\\d+(\\.\\d+)?';
 const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
@@ -34,11 +33,6 @@ class Context {
 	public dateTime: string = '';
 	public id: string = '';
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
-
-	public userAgent: string = new UserAgent({
-		vendor: 'Google Inc.',
-		deviceCategory: 'desktop',
-	}).toString();
 
 	public params: Params = {
 		waypoints: [],

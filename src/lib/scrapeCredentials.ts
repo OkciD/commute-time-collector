@@ -1,7 +1,4 @@
-// import request from 'request';
-// import cheerio from 'cheerio';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
-// import torRequest from '../utils/torRequest';
 import * as WebdriverIO from 'webdriverio';
 import context from '../utils/context';
 import * as Webdriver from 'webdriver';
@@ -10,6 +7,7 @@ export interface Credentials {
 	csrfToken: string;
 	sessionId: string;
 	cookies: Webdriver.Cookie[];
+	userAgent: string;
 }
 
 // укороченный тайпинг для зашитого в html'е json'а с полезными данными
@@ -67,9 +65,6 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 			throw new Error(`Redirect happened ${actualUrl}`);
 		}
 
-		await browser.$('script.config-view')
-			.then((element) => element.waitForExist({ timeout: 30000 }));
-
 		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
 		const configViewJson: string | undefined = await browser.execute(() => {
 			const scriptElement: HTMLScriptElement | null = document.querySelector('script.config-view');
@@ -78,11 +73,6 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		});
 
 		if (typeof configViewJson === 'undefined' || configViewJson === null) {
-			// todo: custom error
-			console.log('#'.repeat(10));
-			console.log(configViewJson);
-			console.log(typeof configViewJson);
-			console.log('#'.repeat(10));
 			throw new Error('Unable to find config on the page');
 		}
 
@@ -95,10 +85,15 @@ export default async function scrapeCredentials(): Promise<Credentials> {
 		const cookies: WebDriver.Cookie[] = await browser.getCookies();
 		localLogger.debug('Cookies', { value: cookies });
 
+		// Получаем юзер-агента
+		const userAgent = await browser.execute(() => navigator.userAgent);
+		localLogger.debug('Got User-Agent', { userAgent });
+
 		const result: Credentials = {
 			csrfToken: configView.csrfToken,
 			sessionId: configView.counters.analytics.sessionId,
 			cookies,
+			userAgent,
 		};
 		localLogger.debug('Returned value', { value: result });
 
