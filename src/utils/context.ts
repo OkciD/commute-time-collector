@@ -1,32 +1,31 @@
 import fecha from 'fecha';
 import minimist from 'minimist';
-import { Merge } from 'type-fest';
 import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
 
-const FLOAT = '\\d+(\\.\\d+)?';
+const FLOAT = '\\d+(\\.\\d+),';
 const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
 const WAYPOINTS_REGEXP = new RegExp(`^${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+$`);
 
-const TOR_PORTS_REGEXP = /^\d+(,\d+)+$/;
-
-interface RawParams {
+interface ParsedArgv {
 	waypoints: string;
-
-	logsDir: string;
-	outDir: string;
-
-	torHost: string;
-	torPorts: string;
-
 	cronExpression: string;
+
+	logsDir?: string;
+	outDir?: string;
+
+	torHost?: string;
+	torPorts?: string;
+
+	seleniumHost?: string;
+	seleniumPort?: string;
 }
 
-type Params = Merge<RawParams, {
-	waypoints: [string, string][],
-	torPorts: string[]
-}>;
+type Params = {
+	waypoints: [string, string][];
+	cronExpression: string;
+};
 
 class Context {
 	public date: string = '';
@@ -36,17 +35,21 @@ class Context {
 
 	public params: Params = {
 		waypoints: [],
-
-		logsDir: path.resolve('logs'),
-		outDir: path.resolve('out'),
-
-		torHost: '127.0.0.1',
-		torPorts: ['9050'],
-
 		cronExpression: '',
 	};
 
-	constructor() {
+	public logsDir: string = path.resolve('logs');
+	public outDir: string = path.resolve('out');
+
+	public torHost: string = '127.0.0.1';
+	public torPorts: number[] = [9050, 9052, 9053, 9054];
+	public currentTorPort: number = this.torPorts[0]; // todo: random
+
+	public seleniumHost: string = '127.0.0.1';
+	public seleniumPort: number = 4444;
+
+	constructor(argv: typeof process.argv) {
+		this.importFromArgv(argv);
 		this.reload();
 	}
 
@@ -58,24 +61,30 @@ class Context {
 		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
 	}
 
-	public importParams(argv: typeof process.argv): void {
-		const rawParams = minimist<RawParams>(argv);
+	private importFromArgv(argv: typeof process.argv): void {
+		const parsedArgv = minimist<ParsedArgv>(argv.slice(2));
 
-		Context.validateParams(rawParams);
+		Context.validateParams(parsedArgv);
+
+		const { waypoints, cronExpression } = parsedArgv;
 
 		this.params = {
-			...this.params,
-			...rawParams,
-			...(rawParams.outDir) && { outDir: path.resolve(rawParams.outDir) },
-			...(rawParams.logsDir) && { logsDir: path.resolve(rawParams.logsDir) },
-			torPorts: rawParams.torPorts.split(','),
-			waypoints: rawParams.waypoints.split('->')
+			waypoints: waypoints
+				.split('->')
 				.map((coordsPair: string) => coordsPair.split(',') as [string, string]),
+			cronExpression,
 		};
+
+		(['logsDir', 'outDir', 'torHost', 'torPorts', 'seleniumHost', 'seleniumPort'] as const).forEach((key) => {
+			if (parsedArgv[key]) {
+				// @ts-ignore
+				this[key] = parsedArgv[key];
+			}
+		});
 	}
 
-	private static validateParams(params: RawParams): void {
-		const { waypoints, cronExpression, torPorts } = params;
+	private static validateParams(params: ParsedArgv): void {
+		const { waypoints, cronExpression } = params;
 
 		// проверяем наличие параметра waypoints
 		assert.notEqual(typeof waypoints, 'undefined', 'Param "waypoints" is required');
@@ -91,18 +100,9 @@ class Context {
 			cron.validate(cronExpression),
 			'Invalid "cronExpression" param. See: https://github.com/node-cron/node-cron#cron-syntax',
 		);
-
-		// проверяем строку с портами для Tor
-		assert.ok(
-			TOR_PORTS_REGEXP.test(torPorts),
-			'Invalid "torPorts" param. It should be <int>[,int] (e.g. 9050 or 9050,9052,9053)',
-		);
-
-		// todo: validate logsDir & outDir
 	}
 }
 
-const context = new Context();
-context.importParams(process.argv.slice(2));
+const context = new Context(process.argv);
 
 export default context;
