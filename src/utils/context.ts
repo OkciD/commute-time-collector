@@ -8,6 +8,16 @@ const FLOAT = '\\d+(\\.\\d+)';
 const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
 const WAYPOINTS_REGEXP = new RegExp(`^${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+$`);
 
+/**
+ * Генератор, возвращающий бесконечный циклический итератор по переданному итерируемому объекту
+ * [1, 2, 3] => 1, 2, 3, 1, 2, 3, ...
+ */
+function* endlessGenerator<T = any>(iterableObject: Iterable<T>) {
+	while (true) {
+		yield* iterableObject;
+	}
+}
+
 interface ParsedArgv {
 	waypoints: string;
 	cronExpression: string;
@@ -28,9 +38,9 @@ type Params = {
 };
 
 class Context {
+	public id: string = '';
 	public date: string = '';
 	public dateTime: string = '';
-	public id: string = '';
 	public isDev: boolean = process.env.NODE_ENV === 'dev';
 
 	public params: Params = {
@@ -42,14 +52,41 @@ class Context {
 	public outDir: string = path.resolve('out');
 
 	public torHost: string = '127.0.0.1';
-	public torPorts: number[] = [9050, 9052, 9053, 9054];
-	public currentTorPort: number = this.torPorts[0]; // todo: random
+	private torPortsIterator: Generator<number>;
+	public currentTorPort: number = 9050;
 
 	public seleniumHost: string = '127.0.0.1';
 	public seleniumPort: number = 4444;
 
 	constructor(argv: typeof process.argv) {
-		this.importFromArgv(argv);
+		const parsedArgv = minimist<ParsedArgv>(argv.slice(2));
+
+		Context.validateParams(parsedArgv);
+
+		const { waypoints, cronExpression, torPorts } = parsedArgv;
+		this.params = {
+			waypoints: waypoints
+				.split('->')
+				.map((coordsPair: string) => coordsPair.split(',') as [string, string]),
+			cronExpression,
+		};
+
+		(['logsDir', 'outDir', 'torHost', 'seleniumHost', 'seleniumPort'] as const).forEach((key) => {
+			if (parsedArgv[key]) {
+				// @ts-ignore
+				this[key] = parsedArgv[key];
+			}
+		});
+
+		const torPortsArray = torPorts?.split(',').map((port: string) => +port) || [9050, 9052, 9053, 9054];
+		this.torPortsIterator = endlessGenerator(torPortsArray);
+
+		// начинаем со случайного порта, "прокручивая" итератор на величину от 0 до torPortsArray.length
+		const initialPortIndex = Math.floor(Math.random() * (torPortsArray.length + 1));
+		for (let i = 0; i < initialPortIndex; i++) {
+			this.torPortsIterator.next();
+		}
+
 		this.reload();
 	}
 
@@ -59,28 +96,7 @@ class Context {
 		this.date = fecha.format(date, 'isoDate');
 		this.dateTime = fecha.format(date, 'isoDateTime');
 		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
-	}
-
-	private importFromArgv(argv: typeof process.argv): void {
-		const parsedArgv = minimist<ParsedArgv>(argv.slice(2));
-
-		Context.validateParams(parsedArgv);
-
-		const { waypoints, cronExpression } = parsedArgv;
-
-		this.params = {
-			waypoints: waypoints
-				.split('->')
-				.map((coordsPair: string) => coordsPair.split(',') as [string, string]),
-			cronExpression,
-		};
-
-		(['logsDir', 'outDir', 'torHost', 'torPorts', 'seleniumHost', 'seleniumPort'] as const).forEach((key) => {
-			if (parsedArgv[key]) {
-				// @ts-ignore
-				this[key] = parsedArgv[key];
-			}
-		});
+		this.currentTorPort = this.torPortsIterator.next().value;
 	}
 
 	private static validateParams(params: ParsedArgv): void {

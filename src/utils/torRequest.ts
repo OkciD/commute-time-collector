@@ -7,23 +7,6 @@ import context from './context';
 
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
-/**
- * Генератор, возвращающий бесконечный циклический итератор по переданному итерируемому объекту
- * [1, 2, 3] => 1, 2, 3, 1, 2, 3, ...
- */
-function* endlessGenerator<T = any>(iterableObject: Iterable<T>) {
-	while (true) {
-		yield* iterableObject;
-	}
-}
-
-const torPortsIterator = endlessGenerator(context.params.torPorts);
-
-// начинаем со случайного порта, "прокручивая" итератор на величину от 0 до torPorts.length
-const initialPortIndex = Math.floor(Math.random() * (context.params.torPorts.length + 1));
-for (let i = 0; i < initialPortIndex; i++) {
-	torPortsIterator.next();
-}
 
 /**
  * Функция, осуществляющая запросы через SOCKS-проксю тора
@@ -31,20 +14,17 @@ for (let i = 0; i < initialPortIndex; i++) {
 export default async function torRequest(requestOptions: request.OptionsWithUrl): Promise<request.Response> {
 	localLogger.debug('Called torRequest', { options: requestOptions });
 
-	const torPort: number = +torPortsIterator.next().value;
-	localLogger.debug(`Using tor port ${torPort}`);
+	const { torHost, currentTorPort } = context;
 
-	tr.setTorAddress(context.params.torHost, torPort);
+	localLogger.debug(`Using tor port ${currentTorPort}`);
+
+	tr.setTorAddress(torHost, currentTorPort);
 
 	// tor-request.request можно скастить к request, потому что он является обёрткой над request
 	const promisifiedTorRequest = util.promisify(tr.request as typeof request);
 
 	const response: request.Response = await promisifiedTorRequest({
 		...requestOptions,
-		headers: {
-			'user-agent': context.userAgent,
-			...requestOptions.headers,
-		},
 		time: true,
 	});
 	const { statusCode, timingPhases, body } = response;
@@ -52,7 +32,7 @@ export default async function torRequest(requestOptions: request.OptionsWithUrl)
 	localLogger.performance('API timings', timingPhases);
 
 	if (statusCode !== 200 || body.error) {
-		// todo: cut body
+		// todo: cut the body
 		throw response.toJSON();
 	}
 

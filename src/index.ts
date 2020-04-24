@@ -9,8 +9,8 @@ import context from './utils/context';
 
 async function main(): Promise<void> {
 	try {
-		logger.info('Start', { params: context.params });
-		const { waypoints, outDir } = context.params;
+		logger.info('Start', { context });
+		// const { waypoints } = context.params;
 
 		const credentials: PageData = await measuredAsyncFn(scrapePageData)();
 		logger.info('Successfully scraped data from the page');

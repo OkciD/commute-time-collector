@@ -45,7 +45,7 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	),
 	transports: [
 		new winston.transports.File({
-			dirname: context.params.logsDir,
+			dirname: context.logsDir,
 			filename: 'commute-time-collector.log',
 		}),
 	],
