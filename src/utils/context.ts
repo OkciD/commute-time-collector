@@ -93,8 +93,8 @@ class Context {
 	public reload() {
 		const date = new Date();
 
-		this.date = fecha.format(date, 'isoDate');
-		this.dateTime = fecha.format(date, 'isoDateTime');
+		this.date = fecha.format(date, 'YYYY-MM-DD');
+		this.dateTime = fecha.format(date, 'YYYY-MM-DDTHH:mm:ssZZ'); // iso format
 		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
 		this.currentTorPort = this.torPortsIterator.next().value;
 	}
