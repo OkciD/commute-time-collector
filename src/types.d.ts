@@ -1,7 +1,16 @@
+import Webdriver from 'webdriver';
+
 declare namespace NodeJS {
 	export interface ProcessEnv {
 		NODE_ENV: 'production' | 'dev';
 	}
+}
+
+export interface PageData {
+	csrfToken: string;
+	sessionId: string;
+	cookies: Webdriver.Cookie[];
+	userAgent: string;
 }
 
 export interface BuildRouteResponse {

@@ -1,8 +1,8 @@
-import { PageData } from './scrapePageData';
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
-import { AutoRoute, BuildRouteResponse, FilteredAutoRoute } from '../types';
+import { AutoRoute, BuildRouteResponse, FilteredAutoRoute, PageData } from '../types';
 import torRequest from '../utils/torRequest';
 import request from 'request';
+import prepareCookieJar from '../utils/prepareCookieJar';
 
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
@@ -10,11 +10,14 @@ export default async function getRoutes(
 	waypoints: [string, string][],
 	credentials: PageData,
 ): Promise<FilteredAutoRoute[]> {
-	const { csrfToken, sessionId, cookieJar } = credentials;
+	const { csrfToken, sessionId, userAgent, cookies } = credentials;
 
 	const options: request.OptionsWithUrl = {
 		url: 'https://yandex.ru/maps/api/router/buildRoute',
 		method: 'GET',
+		headers: {
+			'user-agent': userAgent,
+		},
 		qs: {
 			ajax: 1,
 			csrfToken,
@@ -29,7 +32,7 @@ export default async function getRoutes(
 			type: 'auto',
 		},
 
-		jar: cookieJar,
+		jar: prepareCookieJar(cookies),
 		json: true,
 	};
 

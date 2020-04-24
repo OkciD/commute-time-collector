@@ -1,13 +1,6 @@
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import * as WebdriverIO from 'webdriverio';
-import * as Webdriver from 'webdriver';
-
-export interface PageData {
-	csrfToken: string;
-	sessionId: string;
-	cookies: Webdriver.Cookie[];
-	userAgent: string;
-}
+import { PageData } from '../types';
 
 // укороченный тайпинг для зашитого в html'е json'а с полезными данными
 interface ConfigView {
