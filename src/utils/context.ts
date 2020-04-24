@@ -4,7 +4,7 @@ import path from 'path';
 import assert from 'assert';
 import cron from 'node-cron';
 
-const FLOAT = '\\d+(\\.\\d+),';
+const FLOAT = '\\d+(\\.\\d+)';
 const WAYPOINTS_PAIR = `${FLOAT},${FLOAT}`;
 const WAYPOINTS_REGEXP = new RegExp(`^${WAYPOINTS_PAIR}(->${WAYPOINTS_PAIR})+$`);
 
