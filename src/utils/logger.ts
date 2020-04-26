@@ -1,4 +1,5 @@
 import winston from 'winston';
+import 'winston-daily-rotate-file';
 import path from 'path';
 import context from './context';
 
@@ -29,6 +30,8 @@ winston.addColors({
 	performance: 'blue',
 });
 
+const { dir: logsDir, name: logsFileName, ext: logsFileExtension } = path.parse(context.logFile);
+
 /**
  * Логгер для продакшна. Пишет json-лог в файлик
  */
@@ -44,9 +47,12 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 		winston.format.json(),
 	),
 	transports: [
-		new winston.transports.File({
-			// dirname: context.logsDir,
-			filename: context.logFile,
+		new winston.transports.DailyRotateFile({
+			dirname: logsDir,
+			createSymlink: true,
+			symlinkName: `${logsFileName}${logsFileExtension}`,
+			filename: `${logsFileName}-%DATE%${logsFileExtension}`,
+			datePattern: 'YYYY-MM-DD',
 		}),
 	],
 }) as CustomizedLogger;

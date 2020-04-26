@@ -32,16 +32,11 @@ async function main(): Promise<void> {
 if (context.isDev) {
 	measuredAsyncFn(main)()
 		.catch(() => {
-			logger.end(() => {
-				process.exit(1);
-			});
+			process.exit(1);
 		});
 } else {
 	cron.schedule(context.params.cronExpression, () => {
 		measuredAsyncFn(main)()
-			.catch((error) => {
-				console.error(error);
-			})
 			.finally(() => {
 				context.reload();
 			});
