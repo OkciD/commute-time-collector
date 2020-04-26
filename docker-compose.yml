@@ -6,7 +6,7 @@ services:
     volumes:
       - ./torrc:/etc/tor/torrc:ro
     networks:
-      - network
+      - commute-time-collector-network
     ports:
       - "127.0.0.1:9050:9050"
       - "127.0.0.1:9052-9054:9052-9054"
@@ -17,10 +17,11 @@ services:
     volumes:
       - /dev/shm:/dev/shm
     networks:
-      - network
+      - commute-time-collector-network
     ports:
       - "4444:4444"
 
 networks:
-  network:
+  commute-time-collector-network:
+    name: commute-time-collector-network
     driver: bridge

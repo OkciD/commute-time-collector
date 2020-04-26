@@ -31,7 +31,7 @@ docker-compose down -v
         -e "WAYPOINTS=55.751347,37.618731->55.754930,37.573071" \
         -e "CRON_EXPRESSION=* * * * *" \
         --volume $HOME/commute-time-collector:/root/commute-time-collector \
-        --network="commute-time-collector_network" \
+        --network="commute-time-collector-network" \
         --name="commute-time-collector" \
         okcid/commute-time-collector
     ```
