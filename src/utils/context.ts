@@ -22,7 +22,7 @@ interface ParsedArgv {
 	waypoints: string;
 	cronExpression: string;
 
-	logsDir?: string;
+	logFile?: string;
 	outDir?: string;
 
 	torHost?: string;
@@ -71,7 +71,7 @@ class Context {
 			cronExpression,
 		};
 
-		(['logsDir', 'outDir', 'torHost', 'seleniumHost', 'seleniumPort'] as const).forEach((key) => {
+		(['logFile', 'outDir', 'torHost', 'seleniumHost', 'seleniumPort'] as const).forEach((key) => {
 			if (parsedArgv[key]) {
 				// @ts-ignore
 				this[key] = parsedArgv[key];

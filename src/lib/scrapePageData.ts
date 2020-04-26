@@ -2,6 +2,7 @@ import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import * as WebdriverIO from 'webdriverio';
 import { PageData } from '../types';
 import CustomError, { ErrorCode } from '../utils/error';
+import context from '../utils/context';
 
 // укороченный тайпинг для зашитого в html'е json'а с полезными данными
 interface ConfigView {
@@ -28,8 +29,8 @@ export default async function scrapePageData(): Promise<PageData> {
 	try {
 		// запускаем и настраиваем wdio
 		browser = await WebdriverIO.remote({
-			hostname: '127.0.0.1',
-			port: 4444,
+			hostname: context.seleniumHost,
+			port: context.seleniumPort,
 			path: '/wd/hub',
 			capabilities: {
 				browserName: 'chrome',
@@ -37,7 +38,9 @@ export default async function scrapePageData(): Promise<PageData> {
 					args: [
 						'--headless',
 						'--disable-gpu',
-						'--proxy-server=socks5://tor:9050',
+						// Здесь захардкожен хостнейм тора "tor", потому что это хостнейм контейнера тора относительно
+						// контейнера селениума
+						`--proxy-server=socks5://tor:${context.currentTorPort}`,
 					],
 				},
 			},

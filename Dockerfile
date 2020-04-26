@@ -13,7 +13,8 @@ VOLUME $OUT_DIR
 USER root
 
 # выводим файл с логами в stdout, чтобы докер их съел
-RUN ln -sf /dev/stdout ${LOGS_FILE};
+RUN mkdir -p "$(dirname "$LOGS_FILE")" # && touch "$LOGS_FILE"
+#RUN ln -sf /dev/stdout ${LOGS_FILE};
 
 WORKDIR /usr/src/app
 
