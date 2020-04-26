@@ -13,11 +13,6 @@ VOLUME $OUT_DIR
 
 USER root
 
-RUN apk add logrotate
-
-WORKDIR /etc/logrotate.d
-COPY ./logrotate.conf ./commute-time-collector
-
 WORKDIR /usr/src/app
 
 COPY package*.json ./
