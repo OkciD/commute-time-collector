@@ -18,6 +18,7 @@ USER root
 
 WORKDIR /usr/src/app
 
+COPY .npmrc ./
 COPY package*.json ./
 RUN npm ci --only=production
 
