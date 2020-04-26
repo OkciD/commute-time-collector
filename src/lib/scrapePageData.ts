@@ -1,6 +1,7 @@
 import { createLocalLogger, CustomizedLogger } from '../utils/logger';
 import * as WebdriverIO from 'webdriverio';
 import { PageData } from '../types';
+import CustomError, { ErrorCode } from '../utils/error';
 
 // укороченный тайпинг для зашитого в html'е json'а с полезными данными
 interface ConfigView {
@@ -53,8 +54,7 @@ export default async function scrapePageData(): Promise<PageData> {
 		if (actualUrl.startsWith(YANDEX_MAPS_URL)) {
 			localLogger.debug('Navigation successful', { url: actualUrl });
 		} else {
-			// todo: error with actual url
-			throw new Error(`Redirect happened ${actualUrl}`);
+			throw new CustomError(ErrorCode.Redirect, 'Redirect happened', { actualUrl });
 		}
 
 		// ищем на странице тег <script>, в котором зашит json с кучей полезных данных
@@ -65,7 +65,7 @@ export default async function scrapePageData(): Promise<PageData> {
 		});
 
 		if (typeof configViewJson === 'undefined' || configViewJson === null) {
-			throw new Error('Unable to find config on the page');
+			throw new CustomError(ErrorCode.ConfigViewNotFound, 'Unable to find config on the page');
 		}
 		localLogger.debug('Config script has been found', { valueSlice: `${configViewJson.slice(0, 50)}...` });
 
@@ -96,7 +96,7 @@ export default async function scrapePageData(): Promise<PageData> {
 			await browser.deleteSession();
 			localLogger.debug('Deleted browser session');
 		} else {
-			localLogger.debug('Browser object doesnt exist', { typeofBrowserObject: typeof browser });
+			localLogger.debug('Browser object doesnt exist', { typeOfBrowserObject: typeof browser });
 		}
 	}
 }

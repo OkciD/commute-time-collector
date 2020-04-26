@@ -24,16 +24,11 @@ async function main(): Promise<void> {
 		logger.info('End');
 	} catch (error) {
 		logger.error(error ?? 'Unknown error');
-
-		throw error;
 	}
 }
 
 if (context.isDev) {
-	measuredAsyncFn(main)()
-		.catch(() => {
-			process.exit(1);
-		});
+	measuredAsyncFn(main)();
 } else {
 	cron.schedule(context.params.cronExpression, () => {
 		measuredAsyncFn(main)()
