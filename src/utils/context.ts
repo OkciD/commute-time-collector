@@ -48,7 +48,7 @@ class Context {
 		cronExpression: '',
 	};
 
-	public logsDir: string = path.resolve('logs');
+	public logFile: string = path.resolve('logs', 'commute-time-collector.log');
 	public outDir: string = path.resolve('out');
 
 	public torHost: string = '127.0.0.1';
