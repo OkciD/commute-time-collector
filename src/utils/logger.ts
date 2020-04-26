@@ -1,4 +1,5 @@
 import winston from 'winston';
+import 'winston-daily-rotate-file';
 import path from 'path';
 import context from './context';
 
@@ -29,26 +30,32 @@ winston.addColors({
 	performance: 'blue',
 });
 
+const { dir: logsDir, name: logsFileName, ext: logsFileExtension } = path.parse(context.logFile);
+
 /**
  * Логгер для продакшна. Пишет json-лог в файлик
  */
 const prodLogger: CustomizedLogger = winston.createLogger({
 	defaultMeta: {
 		sid: context.id,
-		date: context.date,
+		time: context.dateTime,
 	},
 	levels: customLoggingLevels,
 	level: 'performance',
 	format: winston.format.combine(
-		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.errors({ stack: true }),
 		winston.format.json(),
 	),
 	transports: [
-		new winston.transports.File({
-			dirname: context.params.logsDir,
-			filename: 'commute-time-collector.log',
-		}),
+		context.isDocker ?
+			new winston.transports.Console() :
+			new winston.transports.DailyRotateFile({
+				dirname: logsDir,
+				createSymlink: true,
+				symlinkName: `${logsFileName}${logsFileExtension}`,
+				filename: `${logsFileName}-%DATE%${logsFileExtension}`,
+				datePattern: 'YYYY-MM-DD',
+			}),
 	],
 }) as CustomizedLogger;
 
@@ -56,10 +63,13 @@ const prodLogger: CustomizedLogger = winston.createLogger({
  * Логгер для дева. Пишет раскрашенный лог в консоль
  */
 const devLogger: CustomizedLogger = winston.createLogger({
+	defaultMeta: {
+		sid: context.id,
+		time: context.dateTime,
+	},
 	levels: customLoggingLevels,
 	level: 'performance',
 	format: winston.format.combine(
-		winston.format.timestamp({ format: 'HH:mm:ss' }),
 		winston.format.colorize({ all: true }),
 		winston.format.errors({ stack: true }),
 		winston.format.simple(),

@@ -1,31 +1,26 @@
-#todo: генерилка docker-compose
 version: '3'
 services:
-  app:
-    build: .
-    environment:
-      - TOR_HOST=tor
-      - TOR_PORTS=9050,9052,9053,9054
-      - WAYPOINTS
-      - CRON_EXPRESSION
-    volumes:
-      - logs:/var/log/commute-time-collector
-      - out:/root/commute-time-collector
   tor:
     image: osminogin/tor-simple:latest
+    container_name: tor
     volumes:
       - ./torrc:/etc/tor/torrc:ro
-volumes:
-  logs:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${LOGS_VOLUME}
+    networks:
+      - network
+    ports:
+      - "127.0.0.1:9050:9050"
+      - "127.0.0.1:9052-9054:9052-9054"
 
-  out:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${OUT_VOLUME}
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: selenium
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - network
+    ports:
+      - "4444:4444"
+
+networks:
+  network:
+    driver: bridge

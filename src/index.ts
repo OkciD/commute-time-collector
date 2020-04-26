@@ -1,7 +1,7 @@
-import scrapeCredentials, { Credentials } from './lib/scrapeCredentials';
+import scrapePageData from './lib/scrapePageData';
 import logger from './utils/logger';
 import { measuredAsyncFn, measuredSyncFn } from './utils/performance';
-import { FilteredAutoRoute } from './types';
+import { FilteredAutoRoute, PageData } from './types';
 import getRoutes from './lib/getRoutes';
 import recordRoutesData from './lib/recordRoutesData';
 import cron from 'node-cron';
@@ -9,13 +9,13 @@ import context from './utils/context';
 
 async function main(): Promise<void> {
 	try {
-		logger.info('Start', { params: context.params });
-		const { waypoints, outDir } = context.params;
+		logger.info('Start', { context });
+		const { params, outDir } = context;
 
-		const credentials: Credentials = await measuredAsyncFn(scrapeCredentials)();
-		logger.info('Successfully scraped credentials from the page');
+		const pageData: PageData = await measuredAsyncFn(scrapePageData)();
+		logger.info('Successfully scraped data from the page');
 
-		const routes: FilteredAutoRoute[] = await getRoutes(waypoints, credentials);
+		const routes: FilteredAutoRoute[] = await getRoutes(params.waypoints, pageData);
 		logger.info('Successfully fetched routes data');
 
 		measuredSyncFn(recordRoutesData)(outDir, routes);
@@ -24,24 +24,14 @@ async function main(): Promise<void> {
 		logger.info('End');
 	} catch (error) {
 		logger.error(error ?? 'Unknown error');
-
-		throw error;
 	}
 }
 
 if (context.isDev) {
-	measuredAsyncFn(main)()
-		.catch(() => {
-			logger.end(() => {
-				process.exit(1);
-			});
-		});
+	measuredAsyncFn(main)();
 } else {
 	cron.schedule(context.params.cronExpression, () => {
 		measuredAsyncFn(main)()
-			.catch((error) => {
-				console.error(error);
-			})
 			.finally(() => {
 				context.reload();
 			});
