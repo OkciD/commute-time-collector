@@ -30,6 +30,8 @@ interface ParsedArgv {
 
 	seleniumHost?: string;
 	seleniumPort?: string;
+
+	docker?: string;
 }
 
 type Params = {
@@ -48,6 +50,8 @@ class Context {
 		cronExpression: '',
 	};
 
+	public isDocker: boolean = false;
+
 	public logFile: string = path.resolve('logs', 'commute-time-collector.log');
 	public outDir: string = path.resolve('out');
 
@@ -63,7 +67,7 @@ class Context {
 
 		Context.validateParams(parsedArgv);
 
-		const { waypoints, cronExpression, torPorts } = parsedArgv;
+		const { waypoints, cronExpression, torPorts, docker } = parsedArgv;
 		this.params = {
 			waypoints: waypoints
 				.split('->')
@@ -80,6 +84,8 @@ class Context {
 
 		const torPortsArray = torPorts?.split(',').map((port: string) => +port) || [9050, 9052, 9053, 9054];
 		this.torPortsIterator = endlessGenerator(torPortsArray);
+
+		this.isDocker = (typeof docker !== 'undefined');
 
 		// начинаем со случайного порта, "прокручивая" итератор на величину от 0 до torPortsArray.length
 		const initialPortIndex = Math.floor(Math.random() * (torPortsArray.length + 1));

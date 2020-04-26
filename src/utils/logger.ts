@@ -47,13 +47,15 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 		winston.format.json(),
 	),
 	transports: [
-		new winston.transports.DailyRotateFile({
-			dirname: logsDir,
-			createSymlink: true,
-			symlinkName: `${logsFileName}${logsFileExtension}`,
-			filename: `${logsFileName}-%DATE%${logsFileExtension}`,
-			datePattern: 'YYYY-MM-DD',
-		}),
+		context.isDocker ?
+			new winston.transports.Console() :
+			new winston.transports.DailyRotateFile({
+				dirname: logsDir,
+				createSymlink: true,
+				symlinkName: `${logsFileName}${logsFileExtension}`,
+				filename: `${logsFileName}-%DATE%${logsFileExtension}`,
+				datePattern: 'YYYY-MM-DD',
+			}),
 	],
 }) as CustomizedLogger;
 
