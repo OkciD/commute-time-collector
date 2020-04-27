@@ -1,7 +1,10 @@
-SocksPort 0.0.0.0:9050
-SocksPort 0.0.0.0:9052
-SocksPort 0.0.0.0:9053
-SocksPort 0.0.0.0:9054
+SocksPort   0.0.0.0:9050
+SocksPort   0.0.0.0:9052
+SocksPort   0.0.0.0:9053
+SocksPort   0.0.0.0:9054
+
+EntryNodes  {ru}    StrictNodes 1
+ExitNodes   {ru}    StrictNodes 1
 
 ## Configuration file for a typical Tor user
 ## Last updated 28 February 2019 for Tor 0.3.5.1-alpha.
