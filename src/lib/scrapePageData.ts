@@ -40,7 +40,7 @@ export default async function scrapePageData(): Promise<PageData> {
 						'--disable-gpu',
 						// Здесь захардкожен хостнейм тора "tor", потому что это хостнейм контейнера тора относительно
 						// контейнера селениума
-						`--proxy-server=socks5://tor:${context.currentTorPort}`,
+						`--proxy-server=socks5://tor:${context.torPort}`,
 					],
 				},
 			},
