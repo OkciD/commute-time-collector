@@ -57,7 +57,7 @@ class Context {
 
 	public torHost: string = '127.0.0.1';
 	private torPortsIterator: Generator<number>;
-	public currentTorPort: number = 9050;
+	public torPort: number = 9050;
 
 	public seleniumHost: string = '127.0.0.1';
 	public seleniumPort: number = 4444;
@@ -82,7 +82,7 @@ class Context {
 			}
 		});
 
-		const torPortsArray = torPorts?.split(',').map((port: string) => +port) || [9050, 9052, 9053, 9054];
+		const torPortsArray = torPorts?.split(',')?.map((port: string) => +port) ?? [9050, 9052, 9053, 9054];
 		this.torPortsIterator = endlessGenerator(torPortsArray);
 
 		this.isDocker = (typeof docker !== 'undefined');
@@ -101,8 +101,8 @@ class Context {
 
 		this.date = fecha.format(date, 'YYYY-MM-DD');
 		this.dateTime = fecha.format(date, 'YYYY-MM-DDTHH:mm:ssZZ'); // iso format
-		this.id = Math.random().toString(36).substr(2, 7); // рандомная число-буквенная строка
-		this.currentTorPort = this.torPortsIterator.next().value;
+		this.id = Math.random().toString(36).substr(2, 10); // рандомная число-буквенная строка
+		this.torPort = this.torPortsIterator.next().value;
 	}
 
 	private static validateParams(params: ParsedArgv): void {
