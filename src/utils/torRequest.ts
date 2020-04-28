@@ -5,9 +5,30 @@ import util from 'util';
 import { createLocalLogger, CustomizedLogger } from './logger';
 import context from './context';
 import CustomError, { ErrorCode } from './error';
+import { Merge } from 'type-fest';
 
 const localLogger: CustomizedLogger = createLocalLogger(module);
 
+type TruncatedResponseJson = Merge<request.ResponseAsJSON, { body: string }>;
+
+function truncateBody(
+	responseJson: request.ResponseAsJSON,
+	bodyMaxLength: number = 100,
+): TruncatedResponseJson {
+	const originalBody: unknown = responseJson.body;
+	let stringifiedBody: string;
+
+	if (typeof originalBody === 'string') {
+		stringifiedBody = originalBody;
+	} else {
+		stringifiedBody = JSON.stringify(originalBody);
+	}
+
+	return {
+		...responseJson,
+		body: `${stringifiedBody.slice(0, bodyMaxLength)}...`,
+	};
+}
 
 /**
  * Функция, осуществляющая запросы через SOCKS-проксю тора
@@ -37,7 +58,7 @@ export default async function torRequest(requestOptions: request.OptionsWithUrl)
 			throw new CustomError(ErrorCode.torRequestStatusCodeError, 'API error', response.toJSON());
 		}
 
-		localLogger.debug(`Successfully got response from ${requestOptions.url}`, response.toJSON());
+		localLogger.debug(`Successfully got response from ${requestOptions.url}`, truncateBody(response.toJSON()));
 
 		return response;
 	} catch (error) {
