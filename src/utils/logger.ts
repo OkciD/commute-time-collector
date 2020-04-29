@@ -44,6 +44,7 @@ const prodLogger: CustomizedLogger = winston.createLogger({
 	level: 'performance',
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
+		winston.format.timestamp({ alias: 'realTime' }),
 		winston.format.json(),
 	),
 	transports: [
