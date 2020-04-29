@@ -1,6 +1,6 @@
 # commute-time-collector [![Build Status](https://travis-ci.com/OkciD/commute-time-collector.svg?branch=master)](https://travis-ci.com/OkciD/commute-time-collector)
 > Сервис, при помощи Яндекс карт собирающий данные о времени, затрачиваемом на Ваши ежедневные маршруты
-> из точки _A_ в точку _B_ (не забывая при этом заехать в точку _C_ по пути, конечно) 
+> из точки _A_ в точку _B_ (даже через точку _C_) 
 
 ## Запуск
 
@@ -36,6 +36,13 @@ docker-compose down -v
         --name="commute-time-collector" \
         okcid/commute-time-collector
     ```
+
+Параметры:
+* `WAYPOINTS` &ndash; список координат точек маршрута, разделённый символом `->`;
+* `CRON_EXPRESSION` &ndash; [cron-выражение](https://github.com/node-cron/node-cron#cron-syntax), по которому будет производиться замер длительности маршрута;
+* `TZ`(_опционально_) &ndash; таймзона контейнера (по умолчанию `Europe/Moscow`);
+* `$HOME/commute-time-collector` &ndash; путь до директории на хост-машине, в которую будут складываться результаты;
+* `--name` &ndash; имя контейнера.
 
 #### Ручками
 `// TODO`
