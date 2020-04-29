@@ -1,4 +1,4 @@
-# commute-time-collector [![Build Status](https://travis-ci.com/OkciD/commute-time-collector.svg?branch=master)](https://travis-ci.com/OkciD/commute-time-collector)
+# commute-time-collector
 > Сервис, при помощи Яндекс карт собирающий данные о времени, затрачиваемом на Ваши ежедневные маршруты
 > из точки _A_ в точку _B_ (даже через точку _C_) 
 
