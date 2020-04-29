@@ -17,7 +17,7 @@ VOLUME $OUT_DIR
 USER root
 
 # выставляем в контейнере таймзону из переменной окружения TZ
-RUN apk -update add tzdata && cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apk --update add tzdata && cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /usr/src/app
 
