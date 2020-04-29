@@ -10,11 +10,14 @@ ENV SELENIUM_PORT   "4444"
 #ENV LOGS_FILE       "/var/log/commute-time-collector/commute-time-collector.log"
 ENV OUT_DIR         "/root/commute-time-collector"
 
+ENV TZ              "Europe/Moscow"
+
 VOLUME $OUT_DIR
 
 USER root
 
-#RUN mkdir -p "$(dirname "$LOGS_FILE")";
+# выставляем в контейнере таймзону из переменной окружения TZ
+RUN apk -update add tzdata && cp /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 WORKDIR /usr/src/app
 
