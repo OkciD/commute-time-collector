@@ -26,6 +26,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run tsc # проверяем, билдится ли тайпскрипт
-    - uses: hallee/eslint-action@1.0.1 # прогоняем линтер
+    - uses: hallee/eslint-action@1 # прогоняем линтер
       with:
-          repo-token: ${{secrets.GITHUB_TOKEN}}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
