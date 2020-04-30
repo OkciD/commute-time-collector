@@ -26,6 +26,4 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run tsc # проверяем, билдится ли тайпскрипт
-    - uses: stefanoeb/eslint-action@1.0.2 # прогоняем линтер
-      with:
-          files: src/
+    - run: npm run lint # прогоняем линтер
