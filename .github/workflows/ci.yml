@@ -27,4 +27,5 @@ jobs:
     - run: npm ci
     - run: npm run tsc # проверяем, билдится ли тайпскрипт
     - run: npm run lint # прогоняем линтер
-    - run: docker build . --file Dockerfile -t okcid/commute-time-collector
+    - run: docker build . --file Dockerfile -t okcid/commute-time-collector # проверяем, что не сломали сборку докер контейнера
+    - run: docker-compose config -q # проверяем валидность docker-compose
