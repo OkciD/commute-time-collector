@@ -1,4 +1,4 @@
-# commute-time-collector
+# commute-time-collector ![CI](https://github.com/OkciD/commute-time-collector/workflows/CI/badge.svg?branch=master)
 > Сервис, при помощи Яндекс карт собирающий данные о времени, затрачиваемом на Ваши ежедневные маршруты
 > из точки _A_ в точку _B_ (даже через точку _C_) 
 
