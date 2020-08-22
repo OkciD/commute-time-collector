@@ -51,13 +51,14 @@ module.exports =  {
 				'allowForLoopAfterthoughts': true
 			}
 		],
-		'lines-between-class-members': [
-			'error',
-			'always',
-			{
-				exceptAfterSingleLine: true
-			}
-		],
+		'lines-between-class-members': 'off', // чёт оно какое-то поломанное
+		// 'lines-between-class-members': [
+		// 	'error',
+		// 	'always',
+		// 	{
+		// 		exceptAfterSingleLine: true
+		// 	}
+		// ],
 		'implicit-arrow-linebreak': 'off',
 		'function-paren-newline': 'off',
 		'@typescript-eslint/no-throw-literal': 'off',
